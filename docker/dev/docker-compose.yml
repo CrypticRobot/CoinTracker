@@ -1,0 +1,30 @@
+version: '3.4'
+
+services:
+  db:
+    image: mysql:5.7
+    volumes:
+      - ../volumes/varlibmysql:/var/lib/mysql
+      - ../volumes/mysqld.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
+    environment:
+      MYSQL_DATABASE: ignoremedatabase
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+
+  front:
+    image: laalaguer/flask-dev
+    depends_on:
+       - db
+    volumes:
+      - ../../:/root/front-source
+    working_dir: /root/front-source
+    command: ["python3", "run.py"]
+    ports:
+      - "127.0.0.1:80:5000"
+    environment:
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+
