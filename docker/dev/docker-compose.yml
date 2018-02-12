@@ -7,8 +7,10 @@ services:
       - ../volumes/varlibmysql:/var/lib/mysql
       - ../volumes/mysqld.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
     environment:
-      MYSQL_DATABASE: ignoremedatabase
+      MYSQL_DATABASE: cointracker
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: cointracker
+      MYSQL_PASSWORD: changemeifyoucan
     ports:
       - "3306:3306"
 
@@ -25,6 +27,7 @@ services:
     environment:
       MYSQL_HOST: db
       MYSQL_PORT: 3306
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
+      MYSQL_USER: cointracker
+      MYSQL_PASSWORD: changemeifyoucan
+      MYSQL_DB_NAME: cointracker
 
