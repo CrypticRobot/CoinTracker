@@ -3,9 +3,8 @@ Flask Application Mostly For Cryptocurrency (Bitcoin) Tracking.
 Language Python > 3.4
 
 # Preparation
-1. Apply for an Okex (okcoin exchange) API accessKey and accessSecret
-2. Coinbase price doesn't require accessKey/ accessSecret.
+1. OKEX `price` API ***doesn't*** need an accessKey/accessSecret.
+2. OKEX `trade` API ***need*** an accessKey/accessSecret pair.
 
 # Test/Development/Production Environement
 See `/docker` folder
-

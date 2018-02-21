@@ -3,8 +3,6 @@
 # 用于访问OKCOIN 现货REST API
 from cointracker.okcoin.HttpMD5Util import buildMySign, httpGet, httpPost
 
-#symbol = 
-#ltc_btc eth_btc etc_btc bch_btc btc_usdt eth_usdt ltc_usdt etc_usdt bch_usdt etc_eth bt1_btc bt2_btc btg_btc qtum_btc hsr_btc neo_btc gas_btc qtum_usdt hsr_usdt neo_usdt gas_usdt
 
 class OKCoinSpot:
 
@@ -22,6 +20,7 @@ class OKCoinSpot:
         return httpGet(self.__url, TICKER_RESOURCE, params)
     
     # 获取OKCOIN kline 行情信息 - xiqing chu
+    # 目前看来 since 这个单位是废物，没用的
     def kline(self, symbol='ltc_btc', time_type='1min', size='', since=''): # since=1417536000000
         TICKER_RESOURCE = "/api/v1/kline.do"
         params = []

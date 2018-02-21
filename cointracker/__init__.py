@@ -3,12 +3,12 @@ import jinja2
 from flask import Flask
 
 
-# Flask
+# Flask Config
 app = Flask(__name__, static_folder='static', template_folder='templates', instance_relative_config=True)
 app.config.from_object('config')  # Load app config
 app.config.from_pyfile('config.py')  # Load instance specifig config (secrets)
 
-# Database
+# Database Config
 db_configs = {
     'user': os.environ['MYSQL_USER'],
     'password': os.environ['MYSQL_PASSWORD'],

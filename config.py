@@ -2,15 +2,15 @@
 # Flask Config
 DEBUG = True
 
-# These secret variables  Must be override with your 'config.py' in 'instance' folder
-OK_API_SITE = None
-OK_API_PK = None  # Public key (access key)
-OK_API_SK = None  # Secret Key (access secret)
+# Must override with your 'config.py' in 'instance' folder
+OK_API_SITE = 'www.okex.com'
+OK_API_PK = ''  # Public key (access key)
+OK_API_SK = ''  # Secret Key (access secret)
+OK_ENABLE_TRADE = False # Enable trade functions
 
 # Database Configuration
-SQLALCHEMY_DATABASE_URI = None
 # Set to: mysql+mysqlconnector://<user>:<password>@<host>[:<port>]/<dbname>
+SQLALCHEMY_DATABASE_URI = None
 SQLALCHEMY_TRACK_MODIFICATIONS = False
-
 # Clean Start of Database
 DROP_ALL_TABLES_ON_START = True
