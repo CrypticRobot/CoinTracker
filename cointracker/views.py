@@ -1,18 +1,8 @@
 import time
 import datetime
-from cointracker import app
-from cointracker.okcoin import OkcoinSpotAPI
+from cointracker import app, okcoinSpot
 from cointracker.transactions import store_history_prices
 
-site = app.config['OK_API_SITE']
-pk = app.config['OK_API_PK']
-sk = app.config['OK_API_SK']
-
-if app.config['OK_ENABLE_TRADE']:
-    if not pk or not sk:
-        raise ValueError('error: Set public key and secret key first')
-
-okcoinSpot = OkcoinSpotAPI.OKCoinSpot(site, pk, sk)
 
 @app.route('/hello')
 def hello():

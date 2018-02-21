@@ -24,6 +24,16 @@ class Price(db.Model):
     end = db.Column(db.Float, nullable=False)
     volume = db.Column(db.Float, nullable=False)
 
+class CronJob(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime, nullable=False)
+    fetched = db.Column(db.Integer,nullable=False)
+    stored = db.Column(db.Integer,nullable=False)
+    # source currency
+    target = db.Column(db.String(10), nullable=False)
+    # target currency
+    against = db.Column(db.String(10), nullable=False)
+    
 
 if app.config['DROP_ALL_TABLES_ON_START']:
     db.drop_all()

@@ -1,6 +1,6 @@
 ''' Database Transactions '''
 import datetime
-from cointracker.database import db, Price
+from cointracker.database import db, Price, CronJob
 
 supported_symbols = [
     "ltc_btc",
@@ -42,7 +42,8 @@ supported_types = [
     '12hour',
 ]
 
-def store_history_prices(okcoinSpot, target, against, since, time_elapse=1, time_unit='min'):
+
+def store_history_prices(okcoinSpot, target, against, since=None, time_elapse=1, time_unit='min'):
     ''' fetch around 2000 spot prices each time
     raise ValueError if target and against is not supported
     raise ValueError if time_elapse and time_unit is not supported
@@ -68,8 +69,11 @@ def store_history_prices(okcoinSpot, target, against, since, time_elapse=1, time
     if time_type not in supported_types:
         raise ValueError("{}_{} pair not in support list".format(time_elapse, time_unit))
     
-    since = int(since.strftime("%s")) * 1000
-    lines = okcoinSpot.kline(symbol=symbol, time_type=time_type, since=since)
+    if since:
+        since = int(since.strftime("%s")) * 1000
+        lines = okcoinSpot.kline(symbol=symbol, time_type=time_type, since=since)
+    else:
+        lines = okcoinSpot.kline(symbol=symbol, time_type=time_type)
     inserted = 0
     for line in lines:
         already = Price.query.filter_by(date=datetime.datetime.fromtimestamp(line[0]/1000), target=target, against=against, time_elapse=time_elapse, time_unit=time_unit).first()
@@ -91,3 +95,21 @@ def store_history_prices(okcoinSpot, target, against, since, time_elapse=1, time
         
         db.session.commit()
     return len(lines), inserted
+
+
+def cron_store_history_prices(okcoinSpot, target, against, since=None, time_elapse=1, time_unit='min'):
+    ''' A cron job to fetch historical price data '''
+    try:
+        fetched, stored = store_history_prices(okcoinSpot, target, against, since, time_elapse, time_unit)
+        cron_job = CronJob(
+            date=datetime.datetime.utcnow(),
+            fetched=fetched,
+            stored=stored,
+            target=target,
+            against=against,
+        )
+        db.session.add(cron_job)
+        db.session.commit()
+        return fetched, stored
+    except ValueError:
+        return None, None

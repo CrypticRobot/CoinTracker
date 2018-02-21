@@ -22,8 +22,23 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://{user}:{password
 TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), 'templates')
 JINJA_ENVIRONMENT = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR))
 
+# OKEX Client
+from cointracker.okcoin import OkcoinSpotAPI
+site = app.config['OK_API_SITE']
+pk = app.config['OK_API_PK']
+sk = app.config['OK_API_SK']
+
+if app.config['OK_ENABLE_TRADE']:
+    if not pk or not sk:
+        raise ValueError('error: Set public key and secret key first')
+
+okcoinSpot = OkcoinSpotAPI.OKCoinSpot(site, pk, sk)
+
 # Views of app
 import cointracker.views
 
 # Database of app
 import cointracker.database
+
+# Cron jobs
+import cointracker.cronjobs
