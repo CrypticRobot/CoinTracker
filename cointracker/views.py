@@ -89,5 +89,7 @@ def web_demo():
     template = JINJA_ENVIRONMENT.get_template('demo.html')
     return template.render({
         'get_price_url': url_for('api_price'),
-        'time_unit': form.time_unit.data
+        'time_unit': form.time_unit.data,
+        'target': form.target.data,
+        'against': form.against.data
     })

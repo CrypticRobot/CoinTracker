@@ -58,6 +58,16 @@ class APISingle(Form):
     )
 
 class DemoPage(Form):
+    target = StringField(
+        u'target',
+        [validators.InputRequired(), validators.Length(min=3, max=5)]
+    )
+
+    against = StringField(
+        u'against',
+        [validators.InputRequired(), validators.Length(min=3, max=5)]
+    )
+    
     time_unit = StringField(
         u'time_unit',
         [validators.Optional(), validators.AnyOf(['min', 'hour', 'day', 'week'])],
