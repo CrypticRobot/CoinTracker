@@ -82,7 +82,12 @@ def api_last():
 @app.route('/web/demo')
 def web_demo():
     ''' Demo of a series of line dotted charts '''
+    form = forms.DemoPage(request.args)
+    if not form.validate():
+        return 'parameter error'
+
     template = JINJA_ENVIRONMENT.get_template('demo.html')
     return template.render({
-        'get_price_url': url_for('api_price')
+        'get_price_url': url_for('api_price'),
+        'time_unit': form.time_unit.data
     })

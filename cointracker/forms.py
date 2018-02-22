@@ -56,3 +56,9 @@ class APISingle(Form):
         u'time_unit',
         [validators.Optional(), validators.AnyOf(['min', 'hour', 'day', 'week'])],
     )
+
+class DemoPage(Form):
+    time_unit = StringField(
+        u'time_unit',
+        [validators.Optional(), validators.AnyOf(['min', 'hour', 'day', 'week'])],
+    )
