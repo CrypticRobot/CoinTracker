@@ -39,7 +39,8 @@ var my_style = {
 function generate_labels(prices){
     result = [];
     for (var i = 0; i < prices.length; i++) {
-        result.push(new Date(prices[i]['date']*1000));
+        m_date = new Date(prices[i]['date']*1000)
+        result.push(m_date.toLocaleDateString('en-GB'));
     }
     return result;
 }
@@ -82,6 +83,6 @@ function fetchData(target, against, limit=10, time_unit='day'){
         }
     });
 }
-$(document).ready(fetchData('ltc', 'btc')); // 页面载入完毕，立即触发初始化
+$(document).ready(fetchData('ltc', 'usdt', 10, 'day')); // 页面载入完毕，立即触发初始化
 </script>
 {% endblock %}
