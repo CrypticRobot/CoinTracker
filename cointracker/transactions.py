@@ -113,3 +113,21 @@ def cron_store_history_prices(okcoinSpot, target, against, since=None, time_elap
         return fetched, stored
     except ValueError:
         return None, None
+
+
+def query_records(target, against, time_elapse=1, time_unit='min', before=None, after=None, limit=100):
+    ''' Before and After shall be datetime.datetime obj
+    Returns
+    -------
+    list: of query results
+    '''
+    q = Price.query.filter_by(target=target, against=against, time_elapse=time_elapse, time_unit=time_unit)
+    if before:
+        q = q.filter(Price.date < before)
+    if after:
+        q = q.filter(Price.date > after)
+    
+    if limit:
+        q = q.limit(limit)
+    
+    return q.all()

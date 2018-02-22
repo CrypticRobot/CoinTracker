@@ -42,3 +42,8 @@ import cointracker.database
 
 # Cron jobs
 import cointracker.cronjobs
+
+# JSON Encoder
+# Flask Json Config
+import cointracker.encoder
+app.json_encoder = cointracker.encoder.MyEncoder
