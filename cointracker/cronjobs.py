@@ -129,7 +129,7 @@ for each in min_jobs:
 for each in day_jobs:
     scheduler.add_job(
         func=cron_store_history_prices,
-        trigger=IntervalTrigger(minutes=11),
+        trigger=IntervalTrigger(minutes=3),
         args=[okcoinSpot, each['target'], each['against']],
         kwargs={'since': None, 'time_elapse':each['time_elapse'], 'time_unit':each['time_unit']},
         id='_'.join([each['target'], each['against'], str(each['time_elapse']), each['time_unit']]),
