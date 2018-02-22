@@ -1,7 +1,7 @@
 import time
 import datetime
 from flask import make_response, request, url_for, jsonify, redirect
-from cointracker import app, okcoinSpot
+from cointracker import app, okcoinSpot, JINJA_ENVIRONMENT
 from cointracker.transactions import store_history_prices, query_records, query_a_record
 import cointracker.forms as forms
 import logging
@@ -77,4 +77,12 @@ def api_last():
     return jsonify({
         'success': True,
         'result': record.to_dict() if record else None,
+    })
+
+@app.route('/web/demo')
+def web_demo():
+    ''' Demo of a series of line dotted charts '''
+    template = JINJA_ENVIRONMENT.get_template('demo.html')
+    return template.render({
+        'get_price_url': url_for('api_price')
     })

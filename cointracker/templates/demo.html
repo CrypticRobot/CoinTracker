@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+
+{% block other_headers %}
+<link rel="stylesheet" href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
+{% endblock %}
+
+
+{% block title %}
+Price Example
+{% endblock %}
+
+{% block body %}
+<div class="">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="ct-chart ct-perfect-fourth"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block other_body %}
+<script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+<script>
+var my_data = {
+  labels: [],
+  series: []
+};
+
+var my_style = {
+    low: 0,
+    showArea: true,
+    showPoint: true,
+    fullWidth: true
+}
+
+function generate_labels(prices){
+    result = [];
+    for (var i = 0; i < prices.length; i++) {
+        result.push(new Date(prices[i]['date']*1000));
+    }
+    return result;
+}
+
+function generate_serie(prices){
+    result = [];
+    for (var i = 0; i < prices.length; i++) {
+        result.push(prices[i]['end']);
+    }
+    return result;
+}
+
+function fetchData(target, against, limit=10, time_unit='day'){
+    var sending_data = {
+        target: target,
+        against: against,
+        limit: limit,
+        time_unit: time_unit,
+    };
+
+    $.ajax({
+        type: "GET",
+        url: "{{ get_price_url }}",
+        data: sending_data,
+        success : function(data, textStatus, jqXHR){
+            // Whether login attempt fails or not, server replies.
+            if (data['success'] == false) {
+                ;
+            } else {
+                my_data.labels = generate_labels(data['result']);
+                my_data.series.push(generate_serie(data['result']));
+                new Chartist.Line('.ct-chart', my_data, my_style);
+                debugger;
+            }
+            
+        },
+        error : function(jqXHR, textStatus, errorThrown){
+            //  Network errors in general
+            ;
+        }
+    });
+}
+$(document).ready(fetchData('ltc', 'btc')); // 页面载入完毕，立即触发初始化
+</script>
+{% endblock %}

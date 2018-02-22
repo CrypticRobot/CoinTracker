@@ -7,20 +7,8 @@ time.sleep(3)  # wait for DB to start
 
 db = SQLAlchemy(app)
 
-class Price(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.DateTime, nullable=False)  # price spot date time
-    target = db.Column(db.String(10), nullable=False)  # source currency
-    against = db.Column(db.String(10), nullable=False)  # target currency
-    time_elapse = db.Column(db.Integer, nullable=False)  # 1,2,3
-    time_unit = db.Column(db.String(10), nullable=False)  # min, hour, week, month, year
-    # price candle and volume
-    start = db.Column(db.Float, nullable=False)
-    high = db.Column(db.Float, nullable=False)
-    low = db.Column(db.Float, nullable=False)
-    end = db.Column(db.Float, nullable=False)
-    volume = db.Column(db.Float, nullable=False)
-
+class Printable():
+    ''' Make SQLalchemy objects convert to python dict '''
     def to_dict(self, exclude=[]):
         insp = inspect(self.__class__)
         columns = insp.all_orm_descriptors.keys()
@@ -34,8 +22,25 @@ class Price(db.Model):
             return_dict[y] = getattr(self, y)
         
         return return_dict
+    
+class Price(db.Model, Printable):
+    ''' Spot price and its date'''
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime, nullable=False)  # price spot date time
+    target = db.Column(db.String(10), nullable=False)  # source currency
+    against = db.Column(db.String(10), nullable=False)  # target currency
+    time_elapse = db.Column(db.Integer, nullable=False)  # 1,2,3
+    time_unit = db.Column(db.String(10), nullable=False)  # min, hour, week, month, year
+    # price candle and volume
+    start = db.Column(db.Float, nullable=False)
+    high = db.Column(db.Float, nullable=False)
+    low = db.Column(db.Float, nullable=False)
+    end = db.Column(db.Float, nullable=False)
+    volume = db.Column(db.Float, nullable=False)
 
-class CronJob(db.Model):
+
+class CronJob(db.Model, Printable):
+    ''' Cron jobs results '''
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime, nullable=False)
     fetched = db.Column(db.Integer,nullable=False)
