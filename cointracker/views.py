@@ -32,6 +32,7 @@ def api_price():
     time_elapse = form.time_elapse.data if form.time_elapse.data else 1
     time_unit = form.time_unit.data if form.time_unit.data else 'min'
     limit = form.limit.data if form.limit.data else 100
+    newest = form.newest.data if form.newest.data else True
     
     records = query_records(
         form.target.data, 
@@ -40,9 +41,13 @@ def api_price():
         time_unit=time_unit, 
         before=before, 
         after=after, 
-        limit=limit
+        limit=limit,
+        newest=newest
     )
     prices = [x.to_dict() for x in records]
+    if newest:
+        prices = prices[::-1]
+    
     return jsonify({
         'success': True,
         'count': len(records),
@@ -82,14 +87,135 @@ def api_last():
 @app.route('/web/demo')
 def web_demo():
     ''' Demo of a series of line dotted charts '''
-    form = forms.DemoPage(request.args)
-    if not form.validate():
-        return 'parameter error'
-
     template = JINJA_ENVIRONMENT.get_template('demo.html')
     return template.render({
         'get_price_url': url_for('api_price'),
-        'time_unit': form.time_unit.data,
-        'target': form.target.data,
-        'against': form.against.data
+        'charts':[
+            {
+                'target': 'btc',
+                'against': 'usdt',
+                'time_unit': 'min',
+                'limit': 120,
+                'chartid': 'btc_usdt_min',
+                'showDate': False,
+                'showTime': True,
+            },
+            {
+                'target': 'btc',
+                'against': 'usdt',
+                'time_unit': 'day',
+                'limit': 90,
+                'chartid': 'btc_usdt_day',
+                'showDate': True,
+                'showTime': False,
+            },
+            {
+                'target': 'ltc',
+                'against': 'usdt',
+                'time_unit': 'min',
+                'limit': 120,
+                'chartid': 'ltc_usdt_min',
+                'showDate': False,
+                'showTime': True,
+            },
+            {
+                'target': 'ltc',
+                'against': 'usdt',
+                'time_unit': 'day',
+                'limit': 90,
+                'chartid': 'ltc_usdt_day',
+                'showDate': True,
+                'showTime': False,
+            },
+            {
+                'target': 'eth',
+                'against': 'usdt',
+                'time_unit': 'min',
+                'limit': 120,
+                'chartid': 'eth_usdt_min',
+                'showDate': False,
+                'showTime': True,
+            },
+            {
+                'target': 'eth',
+                'against': 'usdt',
+                'time_unit': 'day',
+                'limit': 90,
+                'chartid': 'eth_usdt_day',
+                'showDate': True,
+                'showTime': False,
+            },
+            {
+                'target': 'bch',
+                'against': 'usdt',
+                'time_unit': 'min',
+                'limit': 120,
+                'chartid': 'bch_usdt_min',
+                'showDate': False,
+                'showTime': True,
+            },
+            {
+                'target': 'bch',
+                'against': 'usdt',
+                'time_unit': 'day',
+                'limit': 90,
+                'chartid': 'bch_usdt_day',
+                'showDate': True,
+                'showTime': False,
+            },
+            {
+                'target': 'ltc',
+                'against': 'btc',
+                'time_unit': 'min',
+                'limit': 120,
+                'chartid': 'ltc_btc_min',
+                'showDate': False,
+                'showTime': True,
+            },
+            {
+                'target': 'ltc',
+                'against': 'btc',
+                'time_unit': 'day',
+                'limit': 90,
+                'chartid': 'ltc_btc_day',
+                'showDate': True,
+                'showTime': False,
+            },
+            {
+                'target': 'eth',
+                'against': 'btc',
+                'time_unit': 'min',
+                'limit': 120,
+                'chartid': 'eth_btc_min',
+                'showDate': False,
+                'showTime': True,
+            },
+            {
+                'target': 'eth',
+                'against': 'btc',
+                'time_unit': 'day',
+                'limit': 90,
+                'chartid': 'eth_btc_day',
+                'showDate': True,
+                'showTime': False,
+            },
+            {
+                'target': 'bch',
+                'against': 'btc',
+                'time_unit': 'min',
+                'limit': 120,
+                'chartid': 'bch_btc_min',
+                'showDate': False,
+                'showTime': True,
+            },
+            {
+                'target': 'bch',
+                'against': 'btc',
+                'time_unit': 'day',
+                'limit': 90,
+                'chartid': 'bch_btc_day',
+                'showDate': True,
+                'showTime': False,
+            },
+        ]
     })

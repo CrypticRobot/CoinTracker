@@ -115,7 +115,7 @@ def cron_store_history_prices(okcoinSpot, target, against, since=None, time_elap
         return None, None
 
 
-def query_records(target, against, time_elapse=1, time_unit='min', before=None, after=None, limit=100):
+def query_records(target, against, time_elapse=1, time_unit='min', before=None, after=None, limit=100, newest=True):
     ''' Before and After shall be datetime.datetime obj
     Returns
     -------
@@ -126,7 +126,10 @@ def query_records(target, against, time_elapse=1, time_unit='min', before=None, 
         q = q.filter(Price.date < before)
     if after:
         q = q.filter(Price.date > after)
-    
+    if newest:
+        q = q.order_by(Price.date.desc())
+    else:
+        q = q.order_by(Price.date)
     if limit:
         q = q.limit(limit)
     

@@ -1,4 +1,4 @@
-from wtforms import Form, StringField, validators, HiddenField, PasswordField, IntegerField
+from wtforms import Form, StringField, validators, HiddenField, PasswordField, IntegerField, BooleanField
 
 class APIPrice(Form):
     target = StringField(
@@ -36,6 +36,11 @@ class APIPrice(Form):
         [validators.Optional(), validators.NumberRange(min=0, max=300)],
     )
 
+    newest = BooleanField(
+        u'newest',
+        [validators.Optional()]
+    )
+
 class APISingle(Form):
     target = StringField(
         u'target',
@@ -52,22 +57,6 @@ class APISingle(Form):
         [validators.Optional(), validators.NumberRange(min=0, max=30)],
     )
 
-    time_unit = StringField(
-        u'time_unit',
-        [validators.Optional(), validators.AnyOf(['min', 'hour', 'day', 'week'])],
-    )
-
-class DemoPage(Form):
-    target = StringField(
-        u'target',
-        [validators.InputRequired(), validators.Length(min=3, max=5)]
-    )
-
-    against = StringField(
-        u'against',
-        [validators.InputRequired(), validators.Length(min=3, max=5)]
-    )
-    
     time_unit = StringField(
         u'time_unit',
         [validators.Optional(), validators.AnyOf(['min', 'hour', 'day', 'week'])],

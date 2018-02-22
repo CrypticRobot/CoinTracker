@@ -12,12 +12,36 @@ Price Example
 {% block body %}
 <div class="">
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-12">
-                <h1>{{target|upper}}/{{against|upper}} - {{time_unit}}</h1>
-                <div class="ct-chart ct-perfect-fourth"></div>
+        <div class="row mt-5 justify-content-center">
+            <div class="col-5">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="usdtCheckbox" value="option1">
+                        <label class="form-check-label" for="usdtCheckbox">Show USDT</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="minCheckbox" value="option2">
+                        <label class="form-check-label" for="minCheckbox">Show Min</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="dayCheckbox" value="option2">
+                        <label class="form-check-label" for="dayCheckbox">Show Day</label>
+                    </div>
             </div>
         </div>
+        {% for each in charts %}
+        <div class="row justify-content-center mt-5 {{each.against}} {{each.time_unit}}">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        {{each.target|upper}}/{{each.against|upper}} - {{each.time_unit}}
+                    </div>
+                    <div class="card-block">
+                        <div class="ct-chart ct-perfect-fourth" id="{{each.chartid}}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}
@@ -25,27 +49,33 @@ Price Example
 {% block other_body %}
 <script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
 <script>
-var my_data = {
-  labels: [],
-  series: []
-};
-
-var my_style = {
+var my_options = {
     showArea: true,
     showPoint: true,
     fullWidth: true,
     axisX: {
         labelInterpolationFnc: function(value, index) {
-        return index % 10 === 0 ? value : null;
+            return index % 10 === 0 ? value : null;
+        },
+    },
+    axisY: {
+        offset: 80,
+        position: 'end'
     }
-  }
 }
 
-function generate_labels(prices){
+function generate_labels(prices, showDate=true, showTime=false){
     result = [];
     for (var i = 0; i < prices.length; i++) {
         m_date = new Date(prices[i]['date']*1000)
-        result.push(m_date.toLocaleDateString('en-GB'));
+        label = [];
+        if (showDate){
+            label.push(m_date.toLocaleDateString('zh-Hans-CN'));
+        }
+        if (showTime){
+            label.push(m_date.toLocaleTimeString('en-GB'));
+        }
+        result.push(label.join(' '));
     }
     return result;
 }
@@ -58,7 +88,7 @@ function generate_serie(prices){
     return result;
 }
 
-function fetchData(target, against, limit=10, time_unit='day'){
+function fetchData(target, against, limit=10, time_unit='day', chartid, showDate=true, showTime=true){
     var sending_data = {
         target: target,
         against: against,
@@ -75,12 +105,14 @@ function fetchData(target, against, limit=10, time_unit='day'){
             if (data['success'] == false) {
                 ;
             } else {
-                my_data.labels = generate_labels(data['result']);
+                var my_data = {
+                    labels: [],
+                    series: []
+                };
+                my_data.labels = generate_labels(data['result'], showDate, showTime);
                 my_data.series.push(generate_serie(data['result']));
-                new Chartist.Line('.ct-chart', my_data, my_style);
-                debugger;
+                new Chartist.Line('#'+chartid, my_data, my_options);
             }
-            
         },
         error : function(jqXHR, textStatus, errorThrown){
             //  Network errors in general
@@ -88,6 +120,43 @@ function fetchData(target, against, limit=10, time_unit='day'){
         }
     });
 }
-$(document).ready(fetchData("{{target}}", "{{against}}", 100, "{{time_unit}}")); // 页面载入完毕，立即触发初始化
+{% for each in charts %}
+$(document).ready(fetchData("{{each.target}}", "{{each.against}}", "{{each.limit}}", "{{each.time_unit}}", '{{each.chartid}}', {{each.showDate|lower}}, {{each.showTime|lower}})); // 页面载入完毕，立即触发初始化
+{% endfor %}
+</script>
+<script>
+
+function updateState(){
+    if ($('input:checkbox#dayCheckbox').is(':checked')) {
+        $(".day").removeClass('d-none');
+    } else {
+        $(".day").addClass('d-none');
+    }
+    
+    if ($('input:checkbox#minCheckbox').is(':checked')) {
+        $(".min").removeClass('d-none');
+    } else {
+        $(".min").addClass('d-none');
+    }
+
+    if ($('input:checkbox#usdtCheckbox').is(':checked')) {
+        $(".usdt").removeClass('d-none');
+    } else {
+        $(".usdt").addClass('d-none');
+    }
+}
+$('input:checkbox#usdtCheckbox').change(function(){
+    updateState();
+});
+
+$('input:checkbox#minCheckbox').change(function(){
+    updateState();
+});
+
+$('input:checkbox#dayCheckbox').change(function(){
+    updateState();
+});
+
+$(document).ready($('input:checkbox').prop('checked', true));
 </script>
 {% endblock %}
