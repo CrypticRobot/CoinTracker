@@ -14,6 +14,7 @@ Price Example
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-12">
+                <h1>{{target|upper}}/{{against|upper}} - {{time_unit}}</h1>
                 <div class="ct-chart ct-perfect-fourth"></div>
             </div>
         </div>
@@ -30,7 +31,6 @@ var my_data = {
 };
 
 var my_style = {
-    low: 0,
     showArea: true,
     showPoint: true,
     fullWidth: true,
