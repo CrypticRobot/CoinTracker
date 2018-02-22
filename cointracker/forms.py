@@ -35,3 +35,24 @@ class APIPrice(Form):
         u'limit',
         [validators.Optional(), validators.NumberRange(min=0, max=300)],
     )
+
+class APISingle(Form):
+    target = StringField(
+        u'target',
+        [validators.InputRequired(), validators.Length(min=3, max=5)]
+    )
+
+    against = StringField(
+        u'against',
+        [validators.InputRequired(), validators.Length(min=3, max=5)]
+    )
+
+    time_elapse = IntegerField(
+        u'time_elapse',
+        [validators.Optional(), validators.NumberRange(min=0, max=30)],
+    )
+
+    time_unit = StringField(
+        u'time_unit',
+        [validators.Optional(), validators.AnyOf(['min', 'hour', 'day', 'week'])],
+    )

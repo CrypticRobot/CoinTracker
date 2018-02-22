@@ -131,3 +131,16 @@ def query_records(target, against, time_elapse=1, time_unit='min', before=None, 
         q = q.limit(limit)
     
     return q.all()
+
+def query_a_record(target, against, time_elapse=1, time_unit='min', order='ASC'):
+    ''' Before and After shall be datetime.datetime obj
+    Returns
+    -------
+    a result, in the form of python object
+    '''
+    q = Price.query.filter_by(target=target, against=against, time_elapse=time_elapse, time_unit=time_unit)
+    if order == 'ASC':
+        q = q.order_by(Price.date)
+    else:
+        q = q.order_by(Price.date.desc())
+    return q.first()

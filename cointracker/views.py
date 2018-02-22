@@ -2,7 +2,7 @@ import time
 import datetime
 from flask import make_response, request, url_for, jsonify, redirect
 from cointracker import app, okcoinSpot
-from cointracker.transactions import store_history_prices, query_records
+from cointracker.transactions import store_history_prices, query_records, query_a_record
 import cointracker.forms as forms
 import logging
 
@@ -46,5 +46,35 @@ def api_price():
     return jsonify({
         'success': True,
         'count': len(records),
-        'prices': prices,
+        'result': prices,
+    })
+
+@app.route('/api/price/first')
+def api_first():
+    form = forms.APISingle(request.args)
+    if not form.validate():
+        return jsonify({'success': False, 'error': 'parameter error'})
+    
+    time_elapse = form.time_elapse.data if form.time_elapse.data else 1
+    time_unit = form.time_unit.data if form.time_unit.data else 'min'
+
+    record = query_a_record(form.target.data, form.against.data, time_elapse=time_elapse, time_unit=time_unit, order='ASC')
+    return jsonify({
+        'success': True,
+        'result': record.to_dict() if record else None,
+    })
+
+@app.route('/api/price/last')
+def api_last():
+    form = forms.APISingle(request.args)
+    if not form.validate():
+        return jsonify({'success': False, 'error': 'parameter error'})
+    
+    time_elapse = form.time_elapse.data if form.time_elapse.data else 1
+    time_unit = form.time_unit.data if form.time_unit.data else 'min'
+
+    record = query_a_record(form.target.data, form.against.data, time_elapse=time_elapse, time_unit=time_unit, order='DESC')
+    return jsonify({
+        'success': True,
+        'result': record.to_dict() if record else None,
     })
