@@ -48,10 +48,32 @@ Price Example
         <div class="row justify-content-center mt-2 mb-3 {{each.against}} {{each.time_unit}} ct-chart-parent">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header">
-                        {{each.target|upper}}/{{each.against|upper}} - {{each.time_unit}}
-                    </div>
                     <div class="card-body">
+                        <div class="card-block">
+                            <div class="row">
+                                <div class="col-4 col-sm-4 col-md-2 offset-md-1 text-center">
+                                    <h5>{{each.target|upper}}</h5>
+                                    <h5>/{{each.against|upper}}</h5>
+                                </div>
+                                <div class="col-4 col-sm-4 col-md-2 text-center">
+                                    <h5>{{each.limit}}</h5>
+                                    <h5>{{each.time_unit|upper}}</h5>
+                                </div>
+                                <div class="d-none d-sm-none d-md-block col-2 text-center">
+                                    <h5 class="">振幅</h5>
+                                    <h5 class="" id="{{each.chartid}}_amplitude"></h5>
+                                </div>
+                                <div class="d-none d-sm-none d-md-block col-2 text-center">
+                                    <h5 class="">涨跌</h5>
+                                    <h5 class="" id="{{each.chartid}}_gain"></h5>
+                                </div>
+                                <div class="col-4 col-sm-4 col-md-2 text-center">
+                                    <h5 class="">当前 <span id="{{each.chartid}}_icon_gain" class="oi" title="arrow" aria-hidden="true"></span></h5>
+                                    <h5 class="" id="{{each.chartid}}_last"></h5>
+                                </div>
+                            </div>
+                            
+                        </div>
                         <div class="card-block">
                             <div class="ct-chart ct-perfect-fourth" id="{{each.chartid}}"></div>
                         </div>
@@ -133,12 +155,51 @@ function generate_serie(prices, attr){
     return result;
 }
 
+function generate_amplitude(prices, attr){
+    // Can be +9.5 or -199
+    max = prices[0][attr];
+    max_pos = 0;
+    min = prices[0][attr];
+    min_pos = 0;
+    for (var i = 0; i < prices.length; i++) {
+        if (prices[i][attr] > max){
+            max = prices[i][attr];
+            max_pos = i;
+        }
+        if (prices[i][attr] < min){
+            min = prices[i][attr];
+            min_pos = i;
+        }
+    }
+    if(max_pos >= min_pos){
+        return parseFloat((max - min).toFixed(4));
+    } else {
+        return parseFloat((min - max).toFixed(4));
+    }
+}
+
+function generate_gain(prices, attr){
+    start = prices[0][attr];
+    end = prices[prices.length - 1][attr];
+    return parseFloat((end - start).toFixed(4));
+}
+
+function generate_last(prices, attr){
+    end = prices[prices.length - 1][attr];
+    return end;
+}
+
+function generate_first(prices, attr){
+    end = prices[0][attr];
+    return end;
+}
+
 function generate_last_datetime(prices){
     m_date= new Date(prices[prices.length - 1]['date']*1000);
     return m_date.toLocaleDateString('zh-Hans-CN') + ' ' + m_date.toLocaleTimeString('en-GB');
 }
 
-function fetchData(target, against, limit=10, time_unit='day', chartid, showDate=true, showTime=true, chartfootageid){
+function fetchData(target, against, limit=10, time_unit='day', chartid, showDate=true, showTime=true){
     var sending_data = {
         target: target,
         against: against,
@@ -165,7 +226,25 @@ function fetchData(target, against, limit=10, time_unit='day', chartid, showDate
                 // my_data.series.push(generate_serie(data['result'],'low'));
                 // my_data.series.push(generate_serie(data['result'],'end'));
                 new Chartist.Line('#'+chartid, my_data, my_options, responsiveOptions);
-                $('#'+chartfootageid).text(generate_last_datetime(data['result']))
+                $('#'+chartid+'_footage').text(generate_last_datetime(data['result']));
+                $('#'+chartid+'_amplitude').text(generate_amplitude(data['result'], 'high'));
+                $('#'+chartid+'_gain').text(generate_gain(data['result'], 'high'));
+                $('#'+chartid+'_last').text(generate_last(data['result'], 'high'));
+
+                // Change Text color
+                if (generate_gain(data['result'], 'high') > 0){
+                    $('#'+chartid+'_last').addClass('text-success');
+                    $('#'+chartid+'_gain').addClass('text-success');
+                    $('#'+chartid+'_amplitude').addClass('text-success');
+                    $('#'+chartid+'_icon_gain').addClass('text-success');
+                    $('#'+chartid+'_icon_gain').addClass('oi-arrow-circle-top');
+                } else {
+                    $('#'+chartid+'_last').addClass('text-danger');
+                    $('#'+chartid+'_gain').addClass('text-danger');
+                    $('#'+chartid+'_amplitude').addClass('text-danger');
+                    $('#'+chartid+'_icon_gain').addClass('text-danger');
+                    $('#'+chartid+'_icon_gain').addClass('oi-arrow-circle-bottom');
+                }
             }
         },
         error : function(jqXHR, textStatus, errorThrown){
@@ -175,7 +254,7 @@ function fetchData(target, against, limit=10, time_unit='day', chartid, showDate
     });
 }
 {% for each in charts %}
-$(document).ready(fetchData("{{each.target}}", "{{each.against}}", "{{each.limit}}", "{{each.time_unit}}", '{{each.chartid}}', {{each.showDate|lower}}, {{each.showTime|lower}}, '{{each.chartid}}_footage')); // 页面载入完毕，立即触发初始化
+$(document).ready(fetchData("{{each.target}}", "{{each.against}}", "{{each.limit}}", "{{each.time_unit}}", '{{each.chartid}}', {{each.showDate|lower}}, {{each.showTime|lower}})); // 页面载入完毕，立即触发初始化
 {% endfor %}
 </script>
 <script>
