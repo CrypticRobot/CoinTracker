@@ -1,8 +1,8 @@
 .ct-series-a .ct-line,
 .ct-series-a .ct-point,
 .ct-series-a .ct-area{
-  stroke: #6f7cba;
-  fill:#e4e7f2;
+  stroke: rgb(255, 177, 25);
+  fill:rgb(255, 236, 198);
   fill-opacity:.1
 }
 

@@ -53,23 +53,23 @@ Price Example
                             <div class="row">
                                 <div class="col-4 col-sm-4 col-md-2 offset-md-1 text-center">
                                     <h5>{{each.target|upper}}/</h5>
-                                    <h6 class="text-muted">{{each.against|upper}}</h6>
+                                    <h6>{{each.against|upper}}</h6>
                                 </div>
                                 <div class="col-4 col-sm-4 col-md-2 text-center">
                                     <h5>{{each.limit}}</h5>
-                                    <h6 class="text-muted">{{each.time_unit|upper}}</h6>
+                                    <h6>{{each.time_unit|upper}}</h6>
                                 </div>
                                 <div class="d-none d-sm-none d-md-block col-2 text-center">
-                                    <h5 class="">振幅</h5>
-                                    <h6 class="" id="{{each.chartid}}_amplitude"></h6>
+                                    <h5>振幅</h5>
+                                    <h6 id="{{each.chartid}}_amplitude"></h6>
                                 </div>
                                 <div class="d-none d-sm-none d-md-block col-2 text-center">
-                                    <h5 class="">涨跌</h5>
-                                    <h6 class="" id="{{each.chartid}}_gain"></h6>
+                                    <h5>涨跌</h5>
+                                    <h6 id="{{each.chartid}}_gain"></h6>
                                 </div>
                                 <div class="col-4 col-sm-4 col-md-2 text-center">
-                                    <h5 class="">当前 <span id="{{each.chartid}}_icon_gain" class="oi" title="arrow" aria-hidden="true"></span></h5>
-                                    <h6 class="" id="{{each.chartid}}_last"></h6>
+                                    <h5>当前 <span id="{{each.chartid}}_icon_gain" class="oi" title="arrow" aria-hidden="true"></span></h5>
+                                    <h6 id="{{each.chartid}}_last"></h6>
                                 </div>
                             </div>
                             
