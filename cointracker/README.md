@@ -9,9 +9,32 @@ See [transactions.py](transactions.py)
 See [views.py](views.py)
 ```
 all <> are optional parameters and its reference value
-/hello
-/test
-/price?target=ltc&against=btc&limit=<100>&after=<1519086540>&before=<1519087020>&time_elapse=<1>&time_unit=<min>
+/hello - hello word
+
+/test - test api to okex
+
+/web/demo - demo page
+
+/api/price? - api price list endpoint
+target=ltc&
+against=btc&
+limit=<100>&
+after=<1519086540>&
+before=<1519087020>&
+time_elapse=<1>&
+time_unit=<min>
+
+/api/price/first? - api price oldest record endpoint
+target=ltc&
+against=btc&
+time_elapse=<1>&
+time_unit=<min>
+
+/api/price/last? - api price newest record endpoint
+target=ltc&
+against=btc&
+time_elapse=<1>&
+time_unit=<min>
 ```
 
 ## JS/CSS
@@ -37,9 +60,32 @@ See [conjobs.py](cronjobs.py)
 [views.py](views.py)
 ```
 所有 <> 里面的都是可选不填的，以及它的 参考 值
-/hello
-/test
-/price?target=ltc&against=btc&limit=<100>&after=<1519086540>&before=<1519087020>&time_elapse=<1>&time_unit=<min>
+/hello - hello word
+
+/test - 测试 okex 的通讯
+
+/web/demo - demo 页面
+
+/api/price? - api price 列表 endpoint
+target=ltc&
+against=btc&
+limit=<100>&
+after=<1519086540>&
+before=<1519087020>&
+time_elapse=<1>&
+time_unit=<min>
+
+/api/price/first? - api price 最老的一条数据 endpoint
+target=ltc&
+against=btc&
+time_elapse=<1>&
+time_unit=<min>
+
+/api/price/last? - api price 最新的一条数据 endpoint
+target=ltc&
+against=btc&
+time_elapse=<1>&
+time_unit=<min>
 ```
 ## JS/CSS
 `./static` 文件夹
