@@ -3,6 +3,7 @@
 {% block other_headers %}
 <link rel="stylesheet" href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
 <link rel="stylesheet" href="/static/css/chartist-plugin-tooltip.css">
+<link rel="stylesheet" href="/static/css/chartist-my.css">
 {% endblock %}
 
 
@@ -120,13 +121,13 @@ function generate_labels(prices, showDate=true, showTime=false){
     return result;
 }
 
-function generate_serie(prices){
+function generate_serie(prices, attr){
     result = [];
     for (var i = 0; i < prices.length; i++) {
         m_date = new Date(prices[i]['date']*1000);
         result.push({
             meta: m_date.toLocaleString('en-CA'),
-            value: prices[i]['end'],
+            value: prices[i][attr],
         });
     }
     return result;
@@ -159,7 +160,10 @@ function fetchData(target, against, limit=10, time_unit='day', chartid, showDate
                     series: []
                 };
                 my_data.labels = generate_labels(data['result'], showDate, showTime);
-                my_data.series.push(generate_serie(data['result']));
+                // my_data.series.push(generate_serie(data['result'],'start'));
+                my_data.series.push(generate_serie(data['result'],'high'));
+                // my_data.series.push(generate_serie(data['result'],'low'));
+                // my_data.series.push(generate_serie(data['result'],'end'));
                 new Chartist.Line('#'+chartid, my_data, my_options, responsiveOptions);
                 $('#'+chartfootageid).text(generate_last_datetime(data['result']))
             }
