@@ -89,6 +89,16 @@ var my_options = {
     }
 }
 
+var responsiveOptions = [
+  ['screen and (min-width: 641px) and (max-width: 1024px)', {
+    showPoint: false,
+  }],
+  ['screen and (max-width: 640px)', {
+    showPoint: false,
+    showLine: false,
+  }]
+];
+
 function generate_labels(prices, showDate=true, showTime=false){
     result = [];
     for (var i = 0; i < prices.length; i++) {
@@ -141,7 +151,7 @@ function fetchData(target, against, limit=10, time_unit='day', chartid, showDate
                 };
                 my_data.labels = generate_labels(data['result'], showDate, showTime);
                 my_data.series.push(generate_serie(data['result']));
-                new Chartist.Line('#'+chartid, my_data, my_options);
+                new Chartist.Line('#'+chartid, my_data, my_options, responsiveOptions);
                 $('#'+chartfootageid).text(generate_last_datetime(data['result']))
             }
         },
