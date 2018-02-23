@@ -48,32 +48,27 @@ Price Example
         <div class="row justify-content-center mt-2 mb-3 {{each.against}} {{each.time_unit}} ct-chart-parent">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-body">
-                        <div class="card-block">
-                            <div class="row">
-                                <div class="col-4 col-sm-4 col-md-2 offset-md-1 text-center">
-                                    <h5>{{each.target|upper}}/</h5>
-                                    <h6>{{each.against|upper}}</h6>
-                                </div>
-                                <div class="col-4 col-sm-4 col-md-2 text-center">
-                                    <h5>{{each.limit}}</h5>
-                                    <h6>{{each.time_unit|upper}}</h6>
-                                </div>
-                                <div class="d-none d-sm-none d-md-block col-2 text-center">
-                                    <h5>振幅</h5>
-                                    <h6 id="{{each.chartid}}_amplitude"></h6>
-                                </div>
-                                <div class="d-none d-sm-none d-md-block col-2 text-center">
-                                    <h5>涨跌</h5>
-                                    <h6 id="{{each.chartid}}_gain"></h6>
-                                </div>
-                                <div class="col-4 col-sm-4 col-md-2 text-center">
-                                    <h5>当前 <span id="{{each.chartid}}_icon_gain" class="oi" title="arrow" aria-hidden="true"></span></h5>
-                                    <h6 id="{{each.chartid}}_last"></h6>
-                                </div>
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-6 col-sm-6 col-md-4 text-center"> <!-- col-4 col-sm-4 col-md-2 offset-md-1 text-center -->
+                                <h6>{{each.target|upper}}/<small>{{each.against|upper}}</small></h6>
+                                <h6 id="{{each.chartid}}_last"></h6>
                             </div>
-                            
+                            <!--<div class="d-none d-sm-none d-md-block col-md-2 text-center"> col-4 col-sm-4 col-md-2 text-center
+                                <h5>{{each.limit}}</h5>
+                                <h6>{{each.time_unit|upper}}</h6>
+                            </div>-->
+                            <div class="d-none d-sm-none d-md-block col-md-4 text-center"> <!-- col-2 text-center-->
+                                <h6>振幅</h6>
+                                <h6 id="{{each.chartid}}_amplitude"></h6>
+                            </div>
+                            <div class="col-6 col-sm-6 col-md-4 text-center"> <!--col-4 col-sm-4 col-md-2 text-center-->
+                                <h6>{{each.limit}} {{each.time_unit|upper}} <span id="{{each.chartid}}_icon_gain" class="oi" title="arrow" aria-hidden="true"></span></h6>
+                                <h6 id="{{each.chartid}}_gain_percent"></h6>
+                            </div>
                         </div>
+                    </div>
+                    <div class="card-body">
                         <div class="card-block">
                             <div class="ct-chart ct-perfect-fourth" id="{{each.chartid}}"></div>
                         </div>
@@ -199,6 +194,15 @@ function generate_last_datetime(prices){
     return m_date.toLocaleDateString('zh-Hans-CN') + ' ' + m_date.toLocaleTimeString('en-GB');
 }
 
+function add_sign(n){
+    r = n > 0? '+'+n.toString() : n.toString();
+    return r;
+}
+
+function percent(a, b){
+    return parseFloat(((a/b)*100).toFixed(2));
+}
+
 function fetchData(target, against, limit=10, time_unit='day', chartid, showDate=true, showTime=true){
     var sending_data = {
         target: target,
@@ -221,26 +225,33 @@ function fetchData(target, against, limit=10, time_unit='day', chartid, showDate
                     series: []
                 };
                 my_data.labels = generate_labels(data['result'], showDate, showTime);
-                // my_data.series.push(generate_serie(data['result'],'start'));
                 my_data.series.push(generate_serie(data['result'],'high'));
+                // my_data.series.push(generate_serie(data['result'],'start'));
                 // my_data.series.push(generate_serie(data['result'],'low'));
                 // my_data.series.push(generate_serie(data['result'],'end'));
                 new Chartist.Line('#'+chartid, my_data, my_options, responsiveOptions);
+
+                first_price = generate_first(data['result'], 'high');
+                last_price = generate_last(data['result'], 'high');
+                amplitude = generate_amplitude(data['result'], 'high');
+                gain = generate_gain(data['result'], 'high');
+
                 $('#'+chartid+'_footage').text(generate_last_datetime(data['result']));
-                $('#'+chartid+'_amplitude').text(generate_amplitude(data['result'], 'high'));
-                $('#'+chartid+'_gain').text(generate_gain(data['result'], 'high'));
-                $('#'+chartid+'_last').text(generate_last(data['result'], 'high'));
+                $('#'+chartid+'_amplitude').text(percent(amplitude, first_price)+'%');
+                $('#'+chartid+'_last').text(last_price);
+                $('#'+chartid+'_gain_percent').text(add_sign(percent(gain, first_price))+'%');
+
 
                 // Change Text color
                 if (generate_gain(data['result'], 'high') > 0){
                     $('#'+chartid+'_last').addClass('text-success');
-                    $('#'+chartid+'_gain').addClass('text-success');
+                    $('#'+chartid+'_gain_percent').addClass('text-success');
                     $('#'+chartid+'_amplitude').addClass('text-success');
                     $('#'+chartid+'_icon_gain').addClass('text-success');
                     $('#'+chartid+'_icon_gain').addClass('oi-arrow-circle-top');
                 } else {
                     $('#'+chartid+'_last').addClass('text-danger');
-                    $('#'+chartid+'_gain').addClass('text-danger');
+                    $('#'+chartid+'_gain_percent').addClass('text-danger');
                     $('#'+chartid+'_amplitude').addClass('text-danger');
                     $('#'+chartid+'_icon_gain').addClass('text-danger');
                     $('#'+chartid+'_icon_gain').addClass('oi-arrow-circle-bottom');
@@ -258,7 +269,6 @@ $(document).ready(fetchData("{{each.target}}", "{{each.against}}", "{{each.limit
 {% endfor %}
 </script>
 <script>
-
 function updateState(){
     var states = {
         'day': false,

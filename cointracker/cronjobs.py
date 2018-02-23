@@ -116,19 +116,6 @@ day_jobs = [
 for each in min_jobs:
     scheduler.add_job(
         func=cron_store_history_prices,
-        trigger=IntervalTrigger(minutes=5),
-        args=[okcoinSpot, each['target'], each['against']],
-        kwargs={'since': None, 'time_elapse':each['time_elapse'], 'time_unit':each['time_unit']},
-        id='_'.join([each['target'], each['against'], str(each['time_elapse']), each['time_unit']]),
-        name='Periodical: {}'.format('_'.join([each['target'], each['against'], str(each['time_elapse']), each['time_unit']])),
-        max_instances=10,
-        replace_existing=True,
-        jitter=10
-    )
-
-for each in day_jobs:
-    scheduler.add_job(
-        func=cron_store_history_prices,
         trigger=IntervalTrigger(minutes=3),
         args=[okcoinSpot, each['target'], each['against']],
         kwargs={'since': None, 'time_elapse':each['time_elapse'], 'time_unit':each['time_unit']},
@@ -136,7 +123,18 @@ for each in day_jobs:
         name='Periodical: {}'.format('_'.join([each['target'], each['against'], str(each['time_elapse']), each['time_unit']])),
         max_instances=10,
         replace_existing=True,
-        jitter=10
+    )
+
+for each in day_jobs:
+    scheduler.add_job(
+        func=cron_store_history_prices,
+        trigger=IntervalTrigger(minutes=5),
+        args=[okcoinSpot, each['target'], each['against']],
+        kwargs={'since': None, 'time_elapse':each['time_elapse'], 'time_unit':each['time_unit']},
+        id='_'.join([each['target'], each['against'], str(each['time_elapse']), each['time_unit']]),
+        name='Periodical: {}'.format('_'.join([each['target'], each['against'], str(each['time_elapse']), each['time_unit']])),
+        max_instances=10,
+        replace_existing=True,
     )
 
 # Shut down the scheduler when exiting the app
