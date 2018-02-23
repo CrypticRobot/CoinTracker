@@ -2,6 +2,7 @@
 
 {% block other_headers %}
 <link rel="stylesheet" href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
+<link rel="stylesheet" href="/static/css/chartist-plugin-tooltip.css">
 {% endblock %}
 
 
@@ -71,6 +72,7 @@ Price Example
 
 {% block other_body %}
 <script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+<script src="/static/js/chartist-plugin-tooltip.min.js"></script>
 <script>
 var my_options = {
     showArea: true,
@@ -86,7 +88,10 @@ var my_options = {
     axisY: {
         offset: 40,
         position: 'end'
-    }
+    },
+    plugins: [
+        Chartist.plugins.tooltip()
+    ]
 };
 
 var responsiveOptions = [
@@ -118,7 +123,11 @@ function generate_labels(prices, showDate=true, showTime=false){
 function generate_serie(prices){
     result = [];
     for (var i = 0; i < prices.length; i++) {
-        result.push(prices[i]['end']);
+        m_date = new Date(prices[i]['date']*1000);
+        result.push({
+            meta: m_date.toLocaleString('en-CA'),
+            value: prices[i]['end'],
+        });
     }
     return result;
 }
