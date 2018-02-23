@@ -43,21 +43,23 @@ Price Example
             </form>
         </div>
         {% for each in charts %}
-        <div class="row justify-content-center mt-5 {{each.against}} {{each.time_unit}} ct-chart-parent">
+        <div class="row justify-content-center mt-2 mb-3 {{each.against}} {{each.time_unit}} ct-chart-parent">
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
                         {{each.target|upper}}/{{each.against|upper}} - {{each.time_unit}}
                     </div>
-                    <div class="card-block">
-                        <div class="ct-chart ct-perfect-fourth" id="{{each.chartid}}"></div>
-                    </div>
-                    <div class="card-block text-right">
-                        <span class="oi oi-clock d-inline-block text-muted " title="clock" aria-hidden="true"></span>
-                        最后抓取
-                        <p class="card-subtitle mr-5 text-muted d-inline-block " id="{{each.chartid}}_footage">
-                            Card subtitle
-                        </p>
+                    <div class="card-body">
+                        <div class="card-block">
+                            <div class="ct-chart ct-perfect-fourth" id="{{each.chartid}}"></div>
+                        </div>
+                        <div class="card-block text-right">
+                            <span class="oi oi-clock d-inline-block text-muted " title="clock" aria-hidden="true"></span>
+                            <p class="card-subtitle text-muted d-inline-block " id="{{each.chartid}}_footage">
+                                Card subtitle
+                            </p>
+                            抓取
+                        </div>
                     </div>
                 </div>
             </div>
@@ -82,7 +84,7 @@ var my_options = {
         },
     },
     axisY: {
-        offset: 60,
+        offset: 40,
         position: 'end'
     }
 }
