@@ -10,6 +10,7 @@
   color: white;
 }
 
-.ct-grids {
-  stroke: white;
+.ct-grid {
+  stroke:rgb(169,169,169);
+  stroke-dasharray: 3px;
 }
