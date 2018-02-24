@@ -339,14 +339,17 @@ $(document).ready($('input:checkbox').prop('checked', true));
 </script>
 <script>
 $('.collapse').on('shown.bs.collapse', function () {
-    // update the chart from none to real life
     $(this).find('.ct-chart').each(function (index, element){
         element.__chartist__.update();
     });
 
-    // hide other elements
     var current_id = $(this).attr('id');
     $('.collapse').not('#'+current_id).collapse('hide');
+
+    var card_parent = $(this).parent('.card');
+    $('html, body').animate({
+        scrollTop: card_parent.offset().top
+    }, 0);
 })
 </script>
 {% endblock %}
