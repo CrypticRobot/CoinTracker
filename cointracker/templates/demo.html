@@ -45,10 +45,11 @@ Price
             </form>
         </div>
         {% for each in charts %}
-        <div class="row justify-content-center mt-2 mb-3 {{each.against}} {{each.time_unit}} ct-chart-parent">
+        <div class="row justify-content-center mt-2 mb-2 {{each.against}} {{each.time_unit}} ct-chart-parent">
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
+                        <a class="btn btn-block text-dark" data-toggle="collapse" href="#{{each.chartid}}_collapse" aria-expanded="false" aria-controls="{{each.chartid}}_collapse">
                         <div class="row">
                             <div class="col-6 col-sm-6 col-md-4 text-center"> <!-- col-4 col-sm-4 col-md-2 offset-md-1 text-center -->
                                 <h6>{{each.target|upper}}/<small>{{each.against|upper}}</small></h6>
@@ -67,8 +68,9 @@ Price
                                 <h6 id="{{each.chartid}}_gain_percent"></h6>
                             </div>
                         </div>
+                        </a>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body collapse" id="{{each.chartid}}_collapse">
                         <div class="card-block">
                             <div class="ct-chart ct-perfect-fourth" id="{{each.chartid}}"></div>
                         </div>
@@ -334,5 +336,17 @@ $('input:checkbox#btcCheckbox').change(function(){
 });
 
 $(document).ready($('input:checkbox').prop('checked', true));
+</script>
+<script>
+$('.collapse').on('shown.bs.collapse', function () {
+    // update the chart from none to real life
+    $(this).find('.ct-chart').each(function (index, element){
+        element.__chartist__.update();
+    });
+
+    // hide other elements
+    var current_id = $(this).attr('id');
+    $('.collapse').not('#'+current_id).collapse('hide');
+})
 </script>
 {% endblock %}
