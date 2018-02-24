@@ -346,10 +346,10 @@ $('.collapse').on('shown.bs.collapse', function () {
     var current_id = $(this).attr('id');
     $('.collapse').not('#'+current_id).collapse('hide');
 
-    var card_parent = $(this).parent('.card');
-    $('html, body').animate({
-        scrollTop: card_parent.offset().top
-    }, 0);
+    // var card_parent = $(this).parent('.card');
+    // $('html, body').animate({
+    //     scrollTop: card_parent.offset().top
+    // }, 0);
 })
 </script>
 {% endblock %}
