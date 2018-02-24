@@ -50,8 +50,8 @@ Price
                 <div class="card">
                     <div class="card-header">
                         <a class="btn btn-block text-dark" data-toggle="collapse" href="#{{each.chartid}}_collapse" aria-expanded="false" aria-controls="{{each.chartid}}_collapse">
-                        <div class="row">
-                            <div class="col-6 col-sm-6 col-md-4 text-center"> <!-- col-4 col-sm-4 col-md-2 offset-md-1 text-center -->
+                        <div class="row align-items-center">
+                            <div class="col-5 col-sm-5 col-md-3 text-center"> <!-- col-4 col-sm-4 col-md-2 offset-md-1 text-center -->
                                 <h6>{{each.target|upper}}/<small>{{each.against|upper}}</small></h6>
                                 <h6 id="{{each.chartid}}_last"></h6>
                             </div>
@@ -63,9 +63,12 @@ Price
                                 <h6>振幅</h6>
                                 <h6 id="{{each.chartid}}_amplitude"></h6>
                             </div>
-                            <div class="col-6 col-sm-6 col-md-4 text-center"> <!--col-4 col-sm-4 col-md-2 text-center-->
+                            <div class="col-5 col-sm-5 col-md-3 text-center"> <!--col-4 col-sm-4 col-md-2 text-center-->
                                 <h6>{{each.limit}} {{each.time_unit|upper}} <span id="{{each.chartid}}_icon_gain" class="oi" title="arrow" aria-hidden="true"></span></h6>
                                 <h6 id="{{each.chartid}}_gain_percent"></h6>
+                            </div>
+                            <div class="col-1 col-sm-1 col-md-1">
+                                <span class="oi oi-chevron-right animatearrow text-primary"></span>
                             </div>
                         </div>
                         </a>
@@ -346,10 +349,18 @@ $('.collapse').on('shown.bs.collapse', function () {
     var current_id = $(this).attr('id');
     $('.collapse').not('#'+current_id).collapse('hide');
 
+
+    $(this).parent('.card').find('.animatearrow').removeClass('oi-chevron-right').addClass('oi-chevron-bottom').removeClass('text-primary').addClass('text-secondary');
+
+
     // var card_parent = $(this).parent('.card');
     // $('html, body').animate({
     //     scrollTop: card_parent.offset().top
     // }, 0);
 })
+
+$('.collapse').on('hide.bs.collapse', function () {
+    $(this).parent('.card').find('.animatearrow').removeClass('oi-chevron-bottom').addClass('oi-chevron-right').removeClass('text-secondary').addClass('text-primary');
+}) 
 </script>
 {% endblock %}
