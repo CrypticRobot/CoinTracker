@@ -31,6 +31,13 @@ min_jobs = [
         'jitter': 10,
     },
     {
+        'target': 'etc',
+        'against': 'btc',
+        'time_elapse': 1,
+        'time_unit': 'min',
+        'jitter': 10,
+    },
+    {
         'target': 'btc',
         'against': 'usdt',
         'time_elapse': 1,
@@ -53,6 +60,13 @@ min_jobs = [
     },
     {
         'target': 'bch',
+        'against': 'usdt',
+        'time_elapse': 1,
+        'time_unit': 'min',
+        'jitter': 10,
+    },
+    {
+        'target': 'etc',
         'against': 'usdt',
         'time_elapse': 1,
         'time_unit': 'min',
@@ -83,6 +97,13 @@ day_jobs = [
         'jitter': 10,
     },
     {
+        'target': 'etc',
+        'against': 'btc',
+        'time_elapse': 1,
+        'time_unit': 'day',
+        'jitter': 10,
+    },
+    {
         'target': 'btc',
         'against': 'usdt',
         'time_elapse': 1,
@@ -110,13 +131,20 @@ day_jobs = [
         'time_unit': 'day',
         'jitter': 10,
     },
+    {
+        'target': 'etc',
+        'against': 'usdt',
+        'time_elapse': 1,
+        'time_unit': 'day',
+        'jitter': 10,
+    },
 ]
 
 
 for each in min_jobs:
     scheduler.add_job(
         func=cron_store_history_prices,
-        trigger=CronTrigger(second=30), # every minute 30 seconds point
+        trigger=CronTrigger(second=15), # every minute 15 seconds point
         args=[okcoinSpot, each['target'], each['against']],
         kwargs={'since': None, 'time_elapse':each['time_elapse'], 'time_unit':each['time_unit']},
         id='_'.join([each['target'], each['against'], str(each['time_elapse']), each['time_unit']]),
@@ -128,7 +156,7 @@ for each in min_jobs:
 for each in day_jobs:
     scheduler.add_job(
         func=cron_store_history_prices,
-        trigger=CronTrigger(hour=5), # everyday 05:00:00
+        trigger=CronTrigger(second=45), # every minute 45 seconds point
         args=[okcoinSpot, each['target'], each['against']],
         kwargs={'since': None, 'time_elapse':each['time_elapse'], 'time_unit':each['time_unit']},
         id='_'.join([each['target'], each['against'], str(each['time_elapse']), each['time_unit']]),
