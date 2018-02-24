@@ -248,7 +248,7 @@ def web_demo():
                 'target': 'etc',
                 'against': 'btc',
                 'time_unit': 'day',
-                'limit': 120,
+                'limit': 100,
                 'chartid': 'etc_btc_day',
                 'showDate': True,
                 'showTime': False,
