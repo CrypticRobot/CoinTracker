@@ -1,7 +1,7 @@
 # Schedule Cron Job
 import atexit
 from cointracker import app, okcoinSpot
-from cointracker.transactions import cron_store_history_prices
+from cointracker.transactions import cron_store_history_prices, calculate_all_slopes
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 
@@ -140,6 +140,48 @@ day_jobs = [
     },
 ]
 
+slope_jobs = [
+    {
+        'target': 'btc',
+        'against': 'usdt',
+        'window_size': 1,
+    },
+    {
+        'target': 'btc',
+        'against': 'usdt',
+        'window_size': 5,
+    },
+    {
+        'target': 'btc',
+        'against': 'usdt',
+        'window_size': 15,
+    },
+    {
+        'target': 'btc',
+        'against': 'usdt',
+        'window_size': 20,
+    },
+    {
+        'target': 'btc',
+        'against': 'usdt',
+        'window_size': 30,
+    },
+    {
+        'target': 'btc',
+        'against': 'usdt',
+        'window_size': 60,
+    },
+]
+
+for each in slope_jobs:
+    scheduler.add_job(
+        func=calculate_all_slopes,
+        trigger=CronTrigger(minute=49),
+        args=[each['window_size'], each['target'], each['against']],
+        id='_'.join([each['target'], each['against'],str(each['window_size'])]),
+        name='Periodicial: {}'.format('_'.join([each['target'], each['against'],str(each['window_size'])])),
+        replace_existing=True,
+    )
 
 for each in min_jobs:
     scheduler.add_job(

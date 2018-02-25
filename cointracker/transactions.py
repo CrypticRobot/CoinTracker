@@ -1,6 +1,6 @@
 ''' Database Transactions '''
 import datetime
-from cointracker.database import db, Price, CronJob
+from cointracker.database import db, Price, CronJob, Slope
 
 supported_symbols = [
     "ltc_btc",
@@ -151,3 +151,43 @@ def query_a_record(target, against, time_elapse=1, time_unit='min', order='ASC')
     else:
         q = q.order_by(Price.date.desc())
     return q.first()
+
+def calculate_all_slopes(window_size, target='btc', against='usdt'):
+    ''' calculate the slopes of datas in database
+    Parameters
+    ----------
+    window_size: int
+        Minutes
+    '''
+    oldest_price = query_a_record(target, against)
+    newest_price = query_a_record(target, against, order='DESC')
+
+    window_start = oldest_price.date
+    window_end = window_start + datetime.timedelta(minutes=window_size)
+
+    while(window_end <= newest_price.date): # moving the window forward on all database sequence
+        already = Slope.query.filter_by(target=target, against=against, start_date=window_start, end_date=window_end).first()
+        if not already:
+            # calculate the slope, store in database
+            all_prices = query_records(target, against, time_elapse=1, time_unit='min', before=window_end+datetime.timedelta(minutes=1), after=window_start+datetime.timedelta(minutes=-1), limit=None, newest=False)
+            if all_prices:
+                change = all_prices[-1].high - all_prices[0].low
+                minutes_span = window_size
+                slope = change / (minutes_span)
+                volumes = sum([x.volume for x in all_prices])
+                volumed_slope = slope * volumes
+
+                slope_record = Slope(
+                    target=target,
+                    against=against,
+                    change=change,
+                    start_date=window_start,
+                    end_date=window_end,
+                    duration=minutes_span,
+                    slope=slope,
+                    volumed_slope=volumed_slope,
+                )
+                db.session.add(slope_record)
+                db.session.commit()
+        window_start += datetime.timedelta(minutes=1)
+        window_end += datetime.timedelta(minutes=1)

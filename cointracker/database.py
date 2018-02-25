@@ -47,7 +47,21 @@ class CronJob(db.Model, Printable):
     stored = db.Column(db.Integer,nullable=False)
     target = db.Column(db.String(10), nullable=False)
     against = db.Column(db.String(10), nullable=False)
-    
+
+
+class Slope(db.Model, Printable):
+    ''' Slope of price, time, volumn '''
+    id = db.Column(db.Integer, primary_key=True)
+    target = db.Column(db.String(10), nullable=False)  # source currency
+    against = db.Column(db.String(10), nullable=False)  # target currency
+    change = db.Column(db.Float, nullable=False)
+    start_date = db.Column(db.DateTime, nullable=False)
+    end_date = db.Column(db.DateTime, nullable=False)
+    duration = db.Column(db.Integer, nullable=False) # Duration of minutes
+    slope = db.Column(db.Float, nullable=False)
+    volumed_slope = db.Column(db.Float, nullable=False)
+
+
 
 if app.config['DROP_ALL_TABLES_ON_START']:
     db.drop_all()
