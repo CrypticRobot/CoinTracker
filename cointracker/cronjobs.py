@@ -172,7 +172,6 @@ for each in slope_jobs:
         args=[each['window_size'], each['target'], each['against']],
         id='_'.join([each['target'], each['against'],str(each['window_size'])]),
         name='Periodicial: {}'.format('_'.join([each['target'], each['against'],str(each['window_size'])])),
-        max_instances=10,
         replace_existing=True,
     )
 
