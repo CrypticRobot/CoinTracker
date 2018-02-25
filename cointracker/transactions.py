@@ -139,9 +139,23 @@ def query_records(target, against, time_elapse=1, time_unit='min', before=None, 
     else:
         q = q.order_by(Price.date)
     if limit:
-        q = q.limit(limit)
+        q = q.limit(limit*3)
     
-    return q.all()
+    # deduplicate of results
+    results = q.all()
+    distinct_dates = []
+    return_results = []
+    for each in results:
+        if each.date in distinct_dates:
+            pass
+        else:
+            distinct_dates.append(each.date)
+            return_results.append(each)
+
+    if len(return_results)>limit:
+        return return_results[0:limit]
+    else:
+        return return_results
 
 def query_a_record(target, against, time_elapse=1, time_unit='min', order='ASC'):
     ''' Before and After shall be datetime.datetime obj
