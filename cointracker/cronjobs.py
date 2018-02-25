@@ -183,7 +183,6 @@ for each in min_jobs:
         kwargs={'since': None, 'time_elapse':each['time_elapse'], 'time_unit':each['time_unit']},
         id='_'.join([each['target'], each['against'], str(each['time_elapse']), each['time_unit']]),
         name='Periodical: {}'.format('_'.join([each['target'], each['against'], str(each['time_elapse']), each['time_unit']])),
-        max_instances=10,
         replace_existing=True,
     )
 
@@ -195,7 +194,6 @@ for each in day_jobs:
         kwargs={'since': None, 'time_elapse':each['time_elapse'], 'time_unit':each['time_unit']},
         id='_'.join([each['target'], each['against'], str(each['time_elapse']), each['time_unit']]),
         name='Periodical: {}'.format('_'.join([each['target'], each['against'], str(each['time_elapse']), each['time_unit']])),
-        max_instances=10,
         replace_existing=True,
     )
 
