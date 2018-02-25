@@ -1,6 +1,13 @@
 import os
 import jinja2
 from flask import Flask
+import logging
+logging.basicConfig(
+    filename='everything.log',
+    filemode='a',
+    format='[%(levelname)s][%(asctime)s][%(filename)s:%(funcName)s:%(lineno)d][%(message)s]',
+    datefmt='%Y-%m-%d %H:%M:%S',
+    level=logging.INFO)
 
 
 # Flask Config

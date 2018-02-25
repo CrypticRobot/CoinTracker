@@ -1,6 +1,10 @@
 ''' Database Transactions '''
 import datetime
+import logging
 from cointracker.database import db, Price, CronJob, Slope
+
+logger = logging.getLogger('transactions')
+logger.setLevel(logging.DEBUG)
 
 supported_symbols = [
     "ltc_btc",
@@ -162,9 +166,22 @@ def calculate_all_slopes(window_size, target='btc', against='usdt'):
     oldest_price = query_a_record(target, against)
     newest_price = query_a_record(target, against, order='DESC')
 
-    window_start = oldest_price.date
+    last_slope_record = Slope.query.filter_by(target=target, against=against, duration=window_size).order_by(Slope.end_date.desc()).first()
+    if last_slope_record:
+        window_start = last_slope_record.start_date - datetime.timedelta(minutes=window_size) - datetime.timedelta(minutes=100)
+    else:
+        window_start = oldest_price.date
+    
     window_end = window_start + datetime.timedelta(minutes=window_size)
 
+    if newest_price:
+        logger.log(logging.DEBUG, 'newest price date: {}'.format(newest_price.date))
+    if last_slope_record:
+        logger.log(logging.DEBUG, 'last slope record end_date: {}'.format(last_slope_record.end_date))
+    logger.log(logging.DEBUG, 'window_start {}, window_end {}'.format(window_start, window_end))
+
+    total_calculate = 0
+    total_skip = 0
     while(window_end <= newest_price.date): # moving the window forward on all database sequence
         already = Slope.query.filter_by(target=target, against=against, start_date=window_start, end_date=window_end).first()
         if not already:
@@ -189,5 +206,10 @@ def calculate_all_slopes(window_size, target='btc', against='usdt'):
                 )
                 db.session.add(slope_record)
                 db.session.commit()
+                total_calculate += 1
+            else:
+                total_skip += 1
         window_start += datetime.timedelta(minutes=1)
         window_end += datetime.timedelta(minutes=1)
+    
+    logger.log(logging.DEBUG, 'total skipped: {}, total calculated: {}'.format(total_skip, total_calculate))
