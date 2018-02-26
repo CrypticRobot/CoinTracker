@@ -152,7 +152,7 @@ def query_records(target, against, time_elapse=1, time_unit='min', before=None, 
             distinct_dates.append(each.date)
             return_results.append(each)
 
-    if len(return_results)>limit:
+    if limit and len(return_results)>limit:
         return return_results[0:limit]
     else:
         return return_results
