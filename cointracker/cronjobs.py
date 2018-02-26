@@ -163,6 +163,26 @@ slope_jobs = [
         'against': 'usdt',
         'window_size': 60,
     },
+    {
+        'target': 'ltc',
+        'against': 'usdt',
+        'window_size': 15,
+    },
+    {
+        'target': 'ltc',
+        'against': 'usdt',
+        'window_size': 20,
+    },
+    {
+        'target': 'ltc',
+        'against': 'usdt',
+        'window_size': 30,
+    },
+    {
+        'target': 'ltc',
+        'against': 'usdt',
+        'window_size': 60,
+    },
 ]
 
 for each in slope_jobs:
