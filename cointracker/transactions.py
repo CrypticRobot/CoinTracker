@@ -227,3 +227,15 @@ def calculate_all_slopes(window_size, target='btc', against='usdt'):
         window_end += datetime.timedelta(minutes=1)
     
     logger.log(logging.DEBUG, 'total skipped: {}, total calculated: {}'.format(total_skip, total_calculate))
+
+def query_last_cron_job():
+    return CronJob.query.order_by(CronJob.date.desc()).first()
+
+def query_last_slope():
+    return Slope.query.order_by(Slope.end_date.desc()).first()
+
+def count_cron_job():
+    return CronJob.query.count()
+
+def count_slope():
+    return Slope.query.count()

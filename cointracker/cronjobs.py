@@ -171,7 +171,7 @@ for each in slope_jobs:
         trigger=CronTrigger(second=49),
         args=[each['window_size'], each['target'], each['against']],
         id='_'.join([each['target'], each['against'],str(each['window_size'])]),
-        name='Periodicial: {}'.format('_'.join([each['target'], each['against'],str(each['window_size'])])),
+        name='Slope: {}'.format('_'.join([each['target'], each['against'],str(each['window_size'])])),
         replace_existing=True,
     )
 
@@ -182,7 +182,7 @@ for each in min_jobs:
         args=[okcoinSpot, each['target'], each['against']],
         kwargs={'since': None, 'time_elapse':each['time_elapse'], 'time_unit':each['time_unit']},
         id='_'.join([each['target'], each['against'], str(each['time_elapse']), each['time_unit']]),
-        name='Periodical: {}'.format('_'.join([each['target'], each['against'], str(each['time_elapse']), each['time_unit']])),
+        name='Price/min: {}'.format('_'.join([each['target'], each['against'], str(each['time_elapse']), each['time_unit']])),
         replace_existing=True,
     )
 
@@ -193,7 +193,7 @@ for each in day_jobs:
         args=[okcoinSpot, each['target'], each['against']],
         kwargs={'since': None, 'time_elapse':each['time_elapse'], 'time_unit':each['time_unit']},
         id='_'.join([each['target'], each['against'], str(each['time_elapse']), each['time_unit']]),
-        name='Periodical: {}'.format('_'.join([each['target'], each['against'], str(each['time_elapse']), each['time_unit']])),
+        name='Price/day: {}'.format('_'.join([each['target'], each['against'], str(each['time_elapse']), each['time_unit']])),
         replace_existing=True,
     )
 
