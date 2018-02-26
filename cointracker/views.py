@@ -300,17 +300,20 @@ def web_status():
             {
                 'pair' : 'btc_usdt',
                 'first': query_a_record('btc', 'usdt').to_dict(),
-                'last': query_a_record('btc', 'usdt', order='DESC').to_dict()
+                'last': query_a_record('btc', 'usdt', order='DESC').to_dict(),
+                'count': query_a_record('btc', 'usdt', order='DESC').id,
             },
             {
                 'pair' : 'ltc_usdt',
                 'first': query_a_record('ltc', 'usdt').to_dict(),
-                'last': query_a_record('btc', 'usdt', order='DESC').to_dict()
+                'last': query_a_record('ltc', 'usdt', order='DESC').to_dict(),
+                'count': query_a_record('ltc', 'usdt', order='DESC').id
             },
             {
                 'pair': 'eth_usdt',
                 'first': query_a_record('eth', 'usdt').to_dict(),
-                'last': query_a_record('btc', 'usdt', order='DESC').to_dict()
+                'last': query_a_record('eth', 'usdt', order='DESC').to_dict(),
+                'count': query_a_record('eth', 'usdt', order='DESC').id
             },
         ]
     })
