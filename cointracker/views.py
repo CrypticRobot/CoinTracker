@@ -2,7 +2,7 @@ import time
 import datetime
 from flask import make_response, request, url_for, jsonify, redirect
 from cointracker import app, okcoinSpot, JINJA_ENVIRONMENT
-from cointracker.transactions import store_history_prices, query_records, query_a_record, query_last_cron_job, query_last_slope, count_cron_job, count_slope
+from cointracker.transactions import store_history_prices, query_records, query_a_record, query_last_cron_job, query_last_slope, count_cron_job, count_slope, count_records
 import cointracker.forms as forms
 import logging
 
@@ -296,17 +296,20 @@ def web_status():
             {
                 'pair' : 'btc_usdt',
                 'first': query_a_record('btc', 'usdt').to_dict(),
-                'last': query_a_record('btc', 'usdt', order='DESC').to_dict()
+                'last': query_a_record('btc', 'usdt', order='DESC').to_dict(),
+                'count': count_records('btc', 'usdt')
             },
             {
                 'pair' : 'ltc_usdt',
                 'first': query_a_record('ltc', 'usdt').to_dict(),
-                'last': query_a_record('btc', 'usdt', order='DESC').to_dict()
+                'last': query_a_record('btc', 'usdt', order='DESC').to_dict(),
+                'count': count_records('ltc', 'usdt')
             },
             {
                 'pair': 'eth_usdt',
                 'first': query_a_record('eth', 'usdt').to_dict(),
-                'last': query_a_record('btc', 'usdt', order='DESC').to_dict()
+                'last': query_a_record('btc', 'usdt', order='DESC').to_dict(),
+                'count': count_records('eth', 'usdt')
             },
         ]
     })

@@ -12,7 +12,7 @@ Status
                 {% if last_cron %}
                 <li class="list-group-item">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="">Cron</h5>
+                        <h6 class="">Cron<small class="text-danger">({{count_cron}})</small></h6>
                         <small class="text-success">{{ last_cron.date }}</small>
                     </div>
                 </li>
@@ -20,7 +20,7 @@ Status
                 {% if last_slope %}
                 <li class="list-group-item">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="">Slope</h5>
+                        <h6 class="">Slope<small class="text-danger">({{count_slope}})</small></h6>
                         <small class="text-success">{{ last_slope.end_date }}</small>
                     </div>
                 </li>
@@ -30,7 +30,7 @@ Status
                     <li class="list-group-item">
                         <li class="list-group-item">
                             <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="">{{each.first.target|upper}}/<small>{{each.first.against|upper}}</small></h5>
+                                <h6 class="">{{each.first.target|upper}}/<small>{{each.first.against|upper}}<span class="text-danger">({{each.count}})</span></small></h6>
                                 <small class="text-success">{{each.last.date}}</small>
                             </div>
                         </li>

@@ -234,6 +234,9 @@ def query_last_cron_job():
 def query_last_slope():
     return Slope.query.order_by(Slope.end_date.desc()).first()
 
+def count_records(target, against, time_elapse=1, time_unit='min'):
+    return Price.query.filter_by(target=target, against=against, time_elapse=time_elapse, time_unit=time_unit).count()
+
 def count_cron_job():
     return CronJob.query.count()
 
