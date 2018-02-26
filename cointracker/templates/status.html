@@ -26,16 +26,14 @@ Status
                 </li>
                 {% endif %}
                 {% if prices %}
-                    {% for each in prices %}
-                    <li class="list-group-item">
-                        <li class="list-group-item">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h6 class="">{{each.first.target|upper}}/<small>{{each.first.against|upper}}<span class="text-danger">({{each.count}})</span></small></h6>
-                                <small class="text-success">{{each.last.date}}</small>
-                            </div>
-                        </li>
-                    </li>
-                    {% endfor %}
+                {% for each in prices %}
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="">{{each.first.target|upper}}/<small>{{each.first.against|upper}}<span class="text-danger">({{each.count}})</span></small></h6>
+                        <small class="text-success">{{each.last.date}}</small>
+                    </div>
+                </li>
+                {% endfor %}
                 {% endif %}
             </ul>
         </div>
