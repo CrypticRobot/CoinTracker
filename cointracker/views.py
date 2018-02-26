@@ -259,11 +259,13 @@ def web_demo():
 @app.route('/api/status')
 def api_status():
     ''' current database status, by api '''
+    last_cron = query_last_cron_job()
+    last_slope = query_last_slope()
     return jsonify({
-        'last_cron': query_last_cron_job().to_dict() if query_last_cron_job() else None,
-        'last_slope': query_last_slope().to_dict() if query_last_slope() else None,
-        'count_cron': count_cron_job(),
-        'count_slope': count_slope(),
+        'last_cron': last_cron.to_dict() if last_cron else None,
+        'last_slope': last_slope.to_dict() if last_slope else None,
+        'count_cron': last_cron.id if last_cron else None,
+        'count_slope': last_slope.id if last_slope else None,
         'prices': [
             {
                 'pair' : 'btc_usdt',
@@ -287,29 +289,28 @@ def api_status():
 def web_status():
     ''' current database status via web page '''
     template = JINJA_ENVIRONMENT.get_template('status.html')
+    last_cron = query_last_cron_job()
+    last_slope = query_last_slope()
     return template.render({
-        'last_cron': query_last_cron_job().to_dict() if query_last_cron_job() else None,
-        'last_slope': query_last_slope().to_dict() if query_last_slope() else None,
-        'count_cron': count_cron_job(),
-        'count_slope': count_slope(),
+        'last_cron': last_cron.to_dict() if last_cron else None,
+        'last_slope': last_slope.to_dict() if last_slope else None,
+        'count_cron': last_cron.id if last_cron else None,
+        'count_slope': last_slope.id if last_slope else None,
         'prices': [
             {
                 'pair' : 'btc_usdt',
                 'first': query_a_record('btc', 'usdt').to_dict(),
-                'last': query_a_record('btc', 'usdt', order='DESC').to_dict(),
-                'count': count_records('btc', 'usdt')
+                'last': query_a_record('btc', 'usdt', order='DESC').to_dict()
             },
             {
                 'pair' : 'ltc_usdt',
                 'first': query_a_record('ltc', 'usdt').to_dict(),
-                'last': query_a_record('btc', 'usdt', order='DESC').to_dict(),
-                'count': count_records('ltc', 'usdt')
+                'last': query_a_record('btc', 'usdt', order='DESC').to_dict()
             },
             {
                 'pair': 'eth_usdt',
                 'first': query_a_record('eth', 'usdt').to_dict(),
-                'last': query_a_record('btc', 'usdt', order='DESC').to_dict(),
-                'count': count_records('eth', 'usdt')
+                'last': query_a_record('btc', 'usdt', order='DESC').to_dict()
             },
         ]
     })
