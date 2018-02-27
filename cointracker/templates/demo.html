@@ -34,8 +34,8 @@ Price
                 <div class="form-group">
                     <label for="">时间</label>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="minCheckbox" value="option2">
-                        <label class="form-check-label" for="minCheckbox">分钟</label>
+                        <input class="form-check-input" type="checkbox" id="hourCheckbox" value="option2">
+                        <label class="form-check-label" for="hourCheckbox">小时</label>
                     </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="checkbox" id="dayCheckbox" value="option2">
@@ -288,10 +288,10 @@ function updateState(){
         states['day']= false;
     }
     
-    if ($('input:checkbox#minCheckbox').is(':checked')) {
-        states['min']= true;
+    if ($('input:checkbox#hourCheckbox').is(':checked')) {
+        states['hour']= true;
     } else {
-        states['min']= false;
+        states['hour']= false;
     }
 
     if ($('input:checkbox#usdtCheckbox').is(':checked')) {
@@ -326,7 +326,7 @@ $('input:checkbox#usdtCheckbox').change(function(){
     updateState();
 });
 
-$('input:checkbox#minCheckbox').change(function(){
+$('input:checkbox#hourCheckbox').change(function(){
     updateState();
 });
 

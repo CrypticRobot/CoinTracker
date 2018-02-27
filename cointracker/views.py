@@ -7,9 +7,7 @@ from cointracker.transactions import (
     query_records,
     query_a_record,
     query_last_cron_job,
-    query_last_slope,
     count_cron_job,
-    count_slope,
     count_records
 )
 import cointracker.forms as forms
@@ -121,15 +119,17 @@ def web_demo():
             {
                 'target': 'btc',
                 'against': 'usdt',
-                'time_unit': 'min',
-                'limit': 240,
-                'chartid': 'btc_usdt_min',
+                'time_elapse': 1,
+                'time_unit': 'hour',
+                'limit': 24,
+                'chartid': 'btc_usdt_hour',
                 'showDate': False,
                 'showTime': True,
             },
             {
                 'target': 'btc',
                 'against': 'usdt',
+                'time_elapse': 1,
                 'time_unit': 'day',
                 'limit': 120,
                 'chartid': 'btc_usdt_day',
@@ -139,15 +139,17 @@ def web_demo():
             {
                 'target': 'ltc',
                 'against': 'usdt',
-                'time_unit': 'min',
-                'limit': 240,
-                'chartid': 'ltc_usdt_min',
+                'time_elapse': 1,
+                'time_unit': 'hour',
+                'limit': 24,
+                'chartid': 'ltc_usdt_hour',
                 'showDate': False,
                 'showTime': True,
             },
             {
                 'target': 'ltc',
                 'against': 'usdt',
+                'time_elapse': 1,
                 'time_unit': 'day',
                 'limit': 120,
                 'chartid': 'ltc_usdt_day',
@@ -157,15 +159,17 @@ def web_demo():
             {
                 'target': 'eth',
                 'against': 'usdt',
-                'time_unit': 'min',
-                'limit': 240,
-                'chartid': 'eth_usdt_min',
+                'time_elapse': 1,
+                'time_unit': 'hour',
+                'limit': 24,
+                'chartid': 'eth_usdt_hour',
                 'showDate': False,
                 'showTime': True,
             },
             {
                 'target': 'eth',
                 'against': 'usdt',
+                'time_elapse': 1,
                 'time_unit': 'day',
                 'limit': 120,
                 'chartid': 'eth_usdt_day',
@@ -175,15 +179,17 @@ def web_demo():
             {
                 'target': 'bch',
                 'against': 'usdt',
-                'time_unit': 'min',
-                'limit': 240,
-                'chartid': 'bch_usdt_min',
+                'time_elapse': 1,
+                'time_unit': 'hour',
+                'limit': 24,
+                'chartid': 'bch_usdt_hour',
                 'showDate': False,
                 'showTime': True,
             },
             {
                 'target': 'bch',
                 'against': 'usdt',
+                'time_elapse': 1,
                 'time_unit': 'day',
                 'limit': 120,
                 'chartid': 'bch_usdt_day',
@@ -193,15 +199,17 @@ def web_demo():
             {
                 'target': 'etc',
                 'against': 'usdt',
-                'time_unit': 'min',
-                'limit': 240,
-                'chartid': 'etc_usdt_min',
+                'time_elapse': 1,
+                'time_unit': 'hour',
+                'limit': 24,
+                'chartid': 'etc_usdt_hour',
                 'showDate': False,
                 'showTime': True,
             },
             {
                 'target': 'etc',
                 'against': 'usdt',
+                'time_elapse': 1,
                 'time_unit': 'day',
                 'limit': 120,
                 'chartid': 'etc_usdt_day',
@@ -211,15 +219,17 @@ def web_demo():
             {
                 'target': 'ltc',
                 'against': 'btc',
-                'time_unit': 'min',
-                'limit': 240,
-                'chartid': 'ltc_btc_min',
+                'time_elapse': 1,
+                'time_unit': 'hour',
+                'limit': 24,
+                'chartid': 'ltc_btc_hour',
                 'showDate': False,
                 'showTime': True,
             },
             {
                 'target': 'ltc',
                 'against': 'btc',
+                'time_elapse': 1,
                 'time_unit': 'day',
                 'limit': 120,
                 'chartid': 'ltc_btc_day',
@@ -229,15 +239,17 @@ def web_demo():
             {
                 'target': 'eth',
                 'against': 'btc',
-                'time_unit': 'min',
-                'limit': 240,
-                'chartid': 'eth_btc_min',
+                'time_elapse': 1,
+                'time_unit': 'hour',
+                'limit': 24,
+                'chartid': 'eth_btc_hour',
                 'showDate': False,
                 'showTime': True,
             },
             {
                 'target': 'eth',
                 'against': 'btc',
+                'time_elapse': 1,
                 'time_unit': 'day',
                 'limit': 120,
                 'chartid': 'eth_btc_day',
@@ -247,15 +259,17 @@ def web_demo():
             {
                 'target': 'bch',
                 'against': 'btc',
-                'time_unit': 'min',
-                'limit': 240,
-                'chartid': 'bch_btc_min',
+                'time_elapse': 1,
+                'time_unit': 'hour',
+                'limit': 24,
+                'chartid': 'bch_btc_hour',
                 'showDate': False,
                 'showTime': True,
             },
             {
                 'target': 'bch',
                 'against': 'btc',
+                'time_elapse': 1,
                 'time_unit': 'day',
                 'limit': 120,
                 'chartid': 'bch_btc_day',
@@ -265,15 +279,17 @@ def web_demo():
             {
                 'target': 'etc',
                 'against': 'btc',
-                'time_unit': 'min',
-                'limit': 240,
-                'chartid': 'etc_btc_min',
+                'time_elapse': 1,
+                'time_unit': 'hour',
+                'limit': 24,
+                'chartid': 'etc_btc_hour',
                 'showDate': False,
                 'showTime': True,
             },
             {
                 'target': 'etc',
                 'against': 'btc',
+                'time_elapse': 1,
                 'time_unit': 'day',
                 'limit': 120,
                 'chartid': 'etc_btc_day',
@@ -288,12 +304,9 @@ def web_demo():
 def api_status():
     ''' current database status, by api '''
     last_cron = query_last_cron_job()
-    last_slope = query_last_slope()
     return jsonify({
         'last_cron': last_cron.to_dict() if last_cron else None,
-        'last_slope': last_slope.to_dict() if last_slope else None,
         'count_cron': last_cron.id if last_cron else None,
-        'count_slope': last_slope.id if last_slope else None,
         'prices': [
             {
                 'pair': 'btc_usdt',
@@ -319,12 +332,9 @@ def web_status():
     ''' current database status via web page '''
     template = JINJA_ENVIRONMENT.get_template('status.html')
     last_cron = query_last_cron_job()
-    last_slope = query_last_slope()
     return template.render({
         'last_cron': last_cron.to_dict() if last_cron else None,
-        'last_slope': last_slope.to_dict() if last_slope else None,
         'count_cron': last_cron.id if last_cron else None,
-        'count_slope': last_slope.id if last_slope else None,
         'prices': [
             {
                 'pair': 'btc_usdt',

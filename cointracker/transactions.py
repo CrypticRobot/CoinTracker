@@ -1,7 +1,7 @@
 ''' Database Transactions '''
 import datetime
 import logging
-from cointracker.database import db, Price, CronJob, Slope
+from cointracker.database import db, Price, CronJob
 
 logger = logging.getLogger('transactions')
 logger.setLevel(logging.DEBUG)
@@ -47,7 +47,7 @@ supported_types = [
 ]
 
 
-def store_history_prices(okcoinSpot, target, against, since=None, time_elapse=1, time_unit='min'):
+def store_history_prices(okcoinSpot, target, against, since=None, time_elapse=5, time_unit='min'):
     ''' fetch around 2000 spot prices each time
     raise ValueError if target and against is not supported
     raise ValueError if time_elapse and time_unit is not supported
@@ -103,6 +103,10 @@ def store_history_prices(okcoinSpot, target, against, since=None, time_elapse=1,
                 low=float(line[3]),
                 end=float(line[4]),
                 volume=float(line[5]),
+                amplitude=float(line[2]) - float(line[3]),  # high - low
+                amp_percent=(float(line[2]) - float(line[3])) / float(line[1]),  # amplitude / start
+                diff=float(line[4]) - float(line[1]),  # end - start
+                diff_percent=(float(line[4]) - float(line[1])) / float(line[1])  # diff / start
             )
             db.session.add(price)
             inserted += 1
@@ -113,12 +117,16 @@ def store_history_prices(okcoinSpot, target, against, since=None, time_elapse=1,
                 already.low = float(line[3])
                 already.end = float(line[4])
                 already.volume = float(line[5])
+                already.amplitude = float(line[2]) - float(line[3])  # high - low
+                already.amp_percent = (float(line[2]) - float(line[3])) / float(line[1])  # amplitude / start
+                already.diff = float(line[4]) - float(line[1])  # end - start
+                already.diff_percent = (float(line[4]) - float(line[1])) / float(line[1])  # diff / start
 
         db.session.commit()
     return len(lines), inserted
 
 
-def cron_store_history_prices(okcoinSpot, target, against, since=None, time_elapse=1, time_unit='min'):
+def cron_store_history_prices(okcoinSpot, target, against, since=None, time_elapse=5, time_unit='min'):
     ''' A cron job to fetch historical price data '''
     try:
         # Detect last old prices
@@ -131,11 +139,15 @@ def cron_store_history_prices(okcoinSpot, target, against, since=None, time_elap
 
         if already:
             if time_unit == 'min':
-                since = already.date - datetime.timedelta(minutes=10) if not since else since
+                since = already.date - datetime.timedelta(minutes=10*time_elapse) if not since else since
             elif time_unit == 'day':
-                since = already.date - datetime.timedelta(days=10) if not since else since
+                since = already.date - datetime.timedelta(days=10*time_elapse) if not since else since
+            elif time_unit == 'hour':
+                since = already.date - datetime.timedelta(hours=10*time_elapse) if not since else since
+            elif time_unit == 'week':
+                since = already.date - datetime.timedelta(weeks=10*time_elapse) if not since else since
             else:
-                since = already.date - datetime.timedelta(days=10) if not since else since
+                since = already.date - datetime.timedelta(days=10*time_elapse) if not since else since
 
             # logger.log(logging.DEBUG, 'already: {}, since: {}'.format(already.date, since))
 
@@ -158,7 +170,7 @@ def cron_store_history_prices(okcoinSpot, target, against, since=None, time_elap
         return None, None
 
 
-def query_records(target, against, time_elapse=1, time_unit='min', before=None, after=None, limit=100, newest=True):
+def query_records(target, against, time_elapse=5, time_unit='min', before=None, after=None, limit=100, newest=True):
     ''' Before and After shall be datetime.datetime obj, max length of limit is 300
     Returns
     -------
@@ -201,7 +213,7 @@ def query_records(target, against, time_elapse=1, time_unit='min', before=None, 
         return return_results
 
 
-def query_a_record(target, against, time_elapse=1, time_unit='min', order='ASC'):
+def query_a_record(target, against, time_elapse=5, time_unit='min', order='ASC'):
     ''' Before and After shall be datetime.datetime obj
     Returns
     -------
@@ -221,99 +233,11 @@ def query_a_record(target, against, time_elapse=1, time_unit='min', order='ASC')
     return q.first()
 
 
-def calculate_all_slopes(window_size, target='btc', against='usdt'):
-    ''' calculate the slopes of datas in database
-    Parameters
-    ----------
-    window_size: int
-        Minutes
-    '''
-    oldest_price = query_a_record(target, against)
-    newest_price = query_a_record(target, against, order='DESC')
-
-    last_slope_record = Slope.query.filter_by(
-        target=target,
-        against=against,
-        duration=window_size
-    ).order_by(Slope.end_date.desc()).first()
-
-    if last_slope_record:
-        window_start = last_slope_record.start_date - \
-            datetime.timedelta(minutes=window_size) - \
-            datetime.timedelta(minutes=100)
-    else:
-        window_start = oldest_price.date
-
-    window_end = window_start + datetime.timedelta(minutes=window_size)
-
-    if newest_price:
-        logger.log(logging.DEBUG, 'newest price date: {}'.format(
-            newest_price.date))
-    if last_slope_record:
-        logger.log(logging.DEBUG, 'last slope record end_date: {}'.format(
-            last_slope_record.end_date))
-    logger.log(logging.DEBUG, 'window_start {}, window_end {}'.format(
-        window_start, window_end))
-
-    total_calculate = 0
-    total_skip = 0
-    while(window_end <= newest_price.date):
-        already = Slope.query.filter_by(
-            target=target,
-            against=against,
-            start_date=window_start,
-            end_date=window_end
-        ).first()
-        if not already:
-            # calculate the slope, store in database
-            all_prices = query_records(
-                target,
-                against,
-                time_elapse=1,
-                time_unit='min',
-                before=window_end+datetime.timedelta(minutes=1),
-                after=window_start+datetime.timedelta(minutes=-1),
-                limit=None,
-                newest=False
-            )
-            if all_prices:
-                change = all_prices[-1].high - all_prices[0].low
-                minutes_span = window_size
-                slope = change / (minutes_span)
-                volumes = sum([x.volume for x in all_prices])
-                volumed_slope = slope * volumes
-
-                slope_record = Slope(
-                    target=target,
-                    against=against,
-                    change=change,
-                    start_date=window_start,
-                    end_date=window_end,
-                    duration=minutes_span,
-                    slope=slope,
-                    volumed_slope=volumed_slope,
-                )
-                db.session.add(slope_record)
-                db.session.commit()
-                total_calculate += 1
-            else:
-                total_skip += 1
-        window_start += datetime.timedelta(minutes=1)
-        window_end += datetime.timedelta(minutes=1)
-
-    logger.log(logging.DEBUG, 'total skipped: {}, total calculated: {}'.format(
-        total_skip, total_calculate))
-
-
 def query_last_cron_job():
     return CronJob.query.order_by(CronJob.date.desc()).first()
 
 
-def query_last_slope():
-    return Slope.query.order_by(Slope.end_date.desc()).first()
-
-
-def count_records(target, against, time_elapse=1, time_unit='min'):
+def count_records(target, against, time_elapse=5, time_unit='min'):
     return Price.query.filter_by(
         target=target,
         against=against,
@@ -322,7 +246,3 @@ def count_records(target, against, time_elapse=1, time_unit='min'):
 
 def count_cron_job():
     return CronJob.query.count()
-
-
-def count_slope():
-    return Slope.query.count()

@@ -17,14 +17,6 @@ Status
                     </div>
                 </li>
                 {% endif %}
-                {% if last_slope %}
-                <li class="list-group-item">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h6 class="">Slope<small class="text-danger">({{count_slope}})</small></h6>
-                        <small class="text-success">{{ last_slope.end_date }}</small>
-                    </div>
-                </li>
-                {% endif %}
                 {% if prices %}
                 {% for each in prices %}
                 <li class="list-group-item">
