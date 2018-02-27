@@ -121,15 +121,15 @@ def cron_store_history_prices(okcoinSpot, target, against, since=None, time_elap
     ''' A cron job to fetch historical price data '''
     try:
         # Detect last old prices
-        already = Price.query.filter_by(
-            target=target,
-            against=against,
-            time_elapse=time_elapse,
-            time_unit=time_unit
-        ).order_by(Price.date.desc()).first()
+        # already = Price.query.filter_by(
+        #     target=target,
+        #     against=against,
+        #     time_elapse=time_elapse,
+        #     time_unit=time_unit
+        # ).order_by(Price.date.desc()).first()
 
-        if already:
-            since = already.date if not since else since
+        # if already:
+        #     since = already.date if not since else since
         fetched, stored = store_history_prices(
             okcoinSpot, target, against, since, time_elapse, time_unit)
         cron_job = CronJob(
