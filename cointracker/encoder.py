@@ -1,6 +1,7 @@
 import json
 import datetime
 
+
 class MyEncoder(json.JSONEncoder):
     '''
         Usage, when you call a json.dumps(), call like

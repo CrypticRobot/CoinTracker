@@ -1,4 +1,13 @@
-from wtforms import Form, StringField, validators, HiddenField, PasswordField, IntegerField, BooleanField
+from wtforms import (
+    Form,
+    StringField,
+    validators,
+    HiddenField,
+    PasswordField,
+    IntegerField,
+    BooleanField
+)
+
 
 class APIPrice(Form):
     target = StringField(
@@ -40,6 +49,7 @@ class APIPrice(Form):
         u'newest',
         [validators.Optional()]
     )
+
 
 class APISingle(Form):
     target = StringField(

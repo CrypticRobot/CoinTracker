@@ -104,3 +104,5 @@ ENV/
 docker/volumes/varlibmysql/*
 
 .DS_Store
+
+.vscode/

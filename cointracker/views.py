@@ -2,9 +2,19 @@ import time
 import datetime
 from flask import make_response, request, url_for, jsonify, redirect
 from cointracker import app, okcoinSpot, JINJA_ENVIRONMENT
-from cointracker.transactions import store_history_prices, query_records, query_a_record, query_last_cron_job, query_last_slope, count_cron_job, count_slope, count_records
+from cointracker.transactions import (
+    store_history_prices,
+    query_records,
+    query_a_record,
+    query_last_cron_job,
+    query_last_slope,
+    count_cron_job,
+    count_slope,
+    count_records
+)
 import cointracker.forms as forms
 import logging
+
 
 @app.route('/hello')
 def hello():
@@ -26,63 +36,80 @@ def api_price():
     form = forms.APIPrice(request.args)
     if not form.validate():
         return jsonify({'success': False, 'error': 'parameter error'})
-    
-    before = datetime.datetime.fromtimestamp(form.before.data) if form.before.data else None
-    after = datetime.datetime.fromtimestamp(form.after.data) if form.after.data else None
+
+    before = datetime.datetime.fromtimestamp(
+        form.before.data) if form.before.data else None
+    after = datetime.datetime.fromtimestamp(
+        form.after.data) if form.after.data else None
     time_elapse = form.time_elapse.data if form.time_elapse.data else 1
     time_unit = form.time_unit.data if form.time_unit.data else 'min'
     limit = form.limit.data if form.limit.data else 120
     newest = form.newest.data if form.newest.data else True
-    
+
     records = query_records(
-        form.target.data, 
-        form.against.data, 
-        time_elapse=time_elapse, 
-        time_unit=time_unit, 
-        before=before, 
-        after=after, 
+        form.target.data,
+        form.against.data,
+        time_elapse=time_elapse,
+        time_unit=time_unit,
+        before=before,
+        after=after,
         limit=limit,
         newest=newest
     )
     prices = [x.to_dict() for x in records]
     if newest:
         prices = prices[::-1]
-    
+
     return jsonify({
         'success': True,
         'count': len(records),
         'result': prices,
     })
 
+
 @app.route('/api/price/first')
 def api_first():
     form = forms.APISingle(request.args)
     if not form.validate():
         return jsonify({'success': False, 'error': 'parameter error'})
-    
+
     time_elapse = form.time_elapse.data if form.time_elapse.data else 1
     time_unit = form.time_unit.data if form.time_unit.data else 'min'
 
-    record = query_a_record(form.target.data, form.against.data, time_elapse=time_elapse, time_unit=time_unit, order='ASC')
+    record = query_a_record(
+        form.target.data,
+        form.against.data,
+        time_elapse=time_elapse,
+        time_unit=time_unit,
+        order='ASC')
+
     return jsonify({
         'success': True,
         'result': record.to_dict() if record else None,
     })
+
 
 @app.route('/api/price/last')
 def api_last():
     form = forms.APISingle(request.args)
     if not form.validate():
         return jsonify({'success': False, 'error': 'parameter error'})
-    
+
     time_elapse = form.time_elapse.data if form.time_elapse.data else 1
     time_unit = form.time_unit.data if form.time_unit.data else 'min'
 
-    record = query_a_record(form.target.data, form.against.data, time_elapse=time_elapse, time_unit=time_unit, order='DESC')
+    record = query_a_record(
+        form.target.data,
+        form.against.data,
+        time_elapse=time_elapse,
+        time_unit=time_unit,
+        order='DESC')
+
     return jsonify({
         'success': True,
         'result': record.to_dict() if record else None,
     })
+
 
 @app.route('/web/demo')
 def web_demo():
@@ -90,7 +117,7 @@ def web_demo():
     template = JINJA_ENVIRONMENT.get_template('demo.html')
     return template.render({
         'get_price_url': url_for('api_price'),
-        'charts':[
+        'charts': [
             {
                 'target': 'btc',
                 'against': 'usdt',
@@ -256,6 +283,7 @@ def web_demo():
         ]
     })
 
+
 @app.route('/api/status')
 def api_status():
     ''' current database status, by api '''
@@ -268,12 +296,12 @@ def api_status():
         'count_slope': last_slope.id if last_slope else None,
         'prices': [
             {
-                'pair' : 'btc_usdt',
+                'pair': 'btc_usdt',
                 'first': query_a_record('btc', 'usdt').to_dict(),
                 'last': query_a_record('btc', 'usdt', order='DESC').to_dict()
             },
             {
-                'pair' : 'ltc_usdt',
+                'pair': 'ltc_usdt',
                 'first': query_a_record('ltc', 'usdt').to_dict(),
                 'last': query_a_record('btc', 'usdt', order='DESC').to_dict()
             },
@@ -284,7 +312,8 @@ def api_status():
             },
         ]
     })
-    
+
+
 @app.route('/web/status')
 def web_status():
     ''' current database status via web page '''
@@ -298,13 +327,13 @@ def web_status():
         'count_slope': last_slope.id if last_slope else None,
         'prices': [
             {
-                'pair' : 'btc_usdt',
+                'pair': 'btc_usdt',
                 'first': query_a_record('btc', 'usdt').to_dict(),
                 'last': query_a_record('btc', 'usdt', order='DESC').to_dict(),
                 'count': query_a_record('btc', 'usdt', order='DESC').id,
             },
             {
-                'pair' : 'ltc_usdt',
+                'pair': 'ltc_usdt',
                 'first': query_a_record('ltc', 'usdt').to_dict(),
                 'last': query_a_record('ltc', 'usdt', order='DESC').to_dict(),
                 'count': query_a_record('ltc', 'usdt', order='DESC').id

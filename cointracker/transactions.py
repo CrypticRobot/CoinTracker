@@ -67,20 +67,30 @@ def store_history_prices(okcoinSpot, target, against, since=None, time_elapse=1,
     '''
     symbol = '_'.join([target, against])
     if symbol not in supported_symbols:
-        raise ValueError("{}_{} pair not in support list".format(target, against))
-    
+        raise ValueError(
+            "{}_{} pair not in support list".format(target, against))
+
     time_type = ''.join([str(time_elapse), time_unit])
     if time_type not in supported_types:
-        raise ValueError("{}_{} pair not in support list".format(time_elapse, time_unit))
-    
+        raise ValueError("{}_{} pair not in support list".format(
+            time_elapse, time_unit))
+
     if since:
         since = int(since.strftime("%s")) * 1000
-        lines = okcoinSpot.kline(symbol=symbol, time_type=time_type, since=since)
+        lines = okcoinSpot.kline(
+            symbol=symbol, time_type=time_type, since=since)
     else:
         lines = okcoinSpot.kline(symbol=symbol, time_type=time_type)
     inserted = 0
     for line in lines:
-        already = Price.query.filter_by(date=datetime.datetime.fromtimestamp(line[0]/1000), target=target, against=against, time_elapse=time_elapse, time_unit=time_unit).first()
+        already = Price.query.filter_by(
+            date=datetime.datetime.fromtimestamp(line[0]/1000),
+            target=target,
+            against=against,
+            time_elapse=time_elapse,
+            time_unit=time_unit
+        ).first()
+
         if not already:
             price = Price(
                 date=datetime.datetime.fromtimestamp(line[0]/1000),
@@ -96,7 +106,7 @@ def store_history_prices(okcoinSpot, target, against, since=None, time_elapse=1,
             )
             db.session.add(price)
             inserted += 1
-        
+
         db.session.commit()
     return len(lines), inserted
 
@@ -105,10 +115,17 @@ def cron_store_history_prices(okcoinSpot, target, against, since=None, time_elap
     ''' A cron job to fetch historical price data '''
     try:
         # Detect last old prices
-        already = Price.query.filter_by(target=target, against=against, time_elapse=time_elapse, time_unit=time_unit).order_by(Price.date.desc()).first()
+        already = Price.query.filter_by(
+            target=target,
+            against=against,
+            time_elapse=time_elapse,
+            time_unit=time_unit
+        ).order_by(Price.date.desc()).first()
+
         if already:
             since = already.date if not since else since
-        fetched, stored = store_history_prices(okcoinSpot, target, against, since, time_elapse, time_unit)
+        fetched, stored = store_history_prices(
+            okcoinSpot, target, against, since, time_elapse, time_unit)
         cron_job = CronJob(
             date=datetime.datetime.utcnow(),
             fetched=fetched,
@@ -124,12 +141,18 @@ def cron_store_history_prices(okcoinSpot, target, against, since=None, time_elap
 
 
 def query_records(target, against, time_elapse=1, time_unit='min', before=None, after=None, limit=100, newest=True):
-    ''' Before and After shall be datetime.datetime obj
+    ''' Before and After shall be datetime.datetime obj, max length of limit is 300
     Returns
     -------
     list: of query results
     '''
-    q = Price.query.filter_by(target=target, against=against, time_elapse=time_elapse, time_unit=time_unit)
+    q = Price.query.filter_by(
+        target=target,
+        against=against,
+        time_elapse=time_elapse,
+        time_unit=time_unit
+    )
+
     if before:
         q = q.filter(Price.date < before)
     if after:
@@ -139,8 +162,10 @@ def query_records(target, against, time_elapse=1, time_unit='min', before=None, 
     else:
         q = q.order_by(Price.date)
     if limit:
+        if limit > 300:
+            limit = 300
         q = q.limit(limit*3)
-    
+
     # deduplicate of results
     results = q.all()
     distinct_dates = []
@@ -152,10 +177,11 @@ def query_records(target, against, time_elapse=1, time_unit='min', before=None, 
             distinct_dates.append(each.date)
             return_results.append(each)
 
-    if limit and len(return_results)>limit:
+    if limit and len(return_results) > limit:
         return return_results[0:limit]
     else:
         return return_results
+
 
 def query_a_record(target, against, time_elapse=1, time_unit='min', order='ASC'):
     ''' Before and After shall be datetime.datetime obj
@@ -163,12 +189,19 @@ def query_a_record(target, against, time_elapse=1, time_unit='min', order='ASC')
     -------
     a result, in the form of python object
     '''
-    q = Price.query.filter_by(target=target, against=against, time_elapse=time_elapse, time_unit=time_unit)
+    q = Price.query.filter_by(
+        target=target,
+        against=against,
+        time_elapse=time_elapse,
+        time_unit=time_unit
+    )
+
     if order == 'ASC':
         q = q.order_by(Price.date)
     else:
         q = q.order_by(Price.date.desc())
     return q.first()
+
 
 def calculate_all_slopes(window_size, target='btc', against='usdt'):
     ''' calculate the slopes of datas in database
@@ -180,27 +213,51 @@ def calculate_all_slopes(window_size, target='btc', against='usdt'):
     oldest_price = query_a_record(target, against)
     newest_price = query_a_record(target, against, order='DESC')
 
-    last_slope_record = Slope.query.filter_by(target=target, against=against, duration=window_size).order_by(Slope.end_date.desc()).first()
+    last_slope_record = Slope.query.filter_by(
+        target=target,
+        against=against,
+        duration=window_size
+    ).order_by(Slope.end_date.desc()).first()
+
     if last_slope_record:
-        window_start = last_slope_record.start_date - datetime.timedelta(minutes=window_size) - datetime.timedelta(minutes=100)
+        window_start = last_slope_record.start_date - \
+            datetime.timedelta(minutes=window_size) - \
+            datetime.timedelta(minutes=100)
     else:
         window_start = oldest_price.date
-    
+
     window_end = window_start + datetime.timedelta(minutes=window_size)
 
     if newest_price:
-        logger.log(logging.DEBUG, 'newest price date: {}'.format(newest_price.date))
+        logger.log(logging.DEBUG, 'newest price date: {}'.format(
+            newest_price.date))
     if last_slope_record:
-        logger.log(logging.DEBUG, 'last slope record end_date: {}'.format(last_slope_record.end_date))
-    logger.log(logging.DEBUG, 'window_start {}, window_end {}'.format(window_start, window_end))
+        logger.log(logging.DEBUG, 'last slope record end_date: {}'.format(
+            last_slope_record.end_date))
+    logger.log(logging.DEBUG, 'window_start {}, window_end {}'.format(
+        window_start, window_end))
 
     total_calculate = 0
     total_skip = 0
-    while(window_end <= newest_price.date): # moving the window forward on all database sequence
-        already = Slope.query.filter_by(target=target, against=against, start_date=window_start, end_date=window_end).first()
+    while(window_end <= newest_price.date):
+        already = Slope.query.filter_by(
+            target=target,
+            against=against,
+            start_date=window_start,
+            end_date=window_end
+        ).first()
         if not already:
             # calculate the slope, store in database
-            all_prices = query_records(target, against, time_elapse=1, time_unit='min', before=window_end+datetime.timedelta(minutes=1), after=window_start+datetime.timedelta(minutes=-1), limit=None, newest=False)
+            all_prices = query_records(
+                target,
+                against,
+                time_elapse=1,
+                time_unit='min',
+                before=window_end+datetime.timedelta(minutes=1),
+                after=window_start+datetime.timedelta(minutes=-1),
+                limit=None,
+                newest=False
+            )
             if all_prices:
                 change = all_prices[-1].high - all_prices[0].low
                 minutes_span = window_size
@@ -225,20 +282,29 @@ def calculate_all_slopes(window_size, target='btc', against='usdt'):
                 total_skip += 1
         window_start += datetime.timedelta(minutes=1)
         window_end += datetime.timedelta(minutes=1)
-    
-    logger.log(logging.DEBUG, 'total skipped: {}, total calculated: {}'.format(total_skip, total_calculate))
+
+    logger.log(logging.DEBUG, 'total skipped: {}, total calculated: {}'.format(
+        total_skip, total_calculate))
+
 
 def query_last_cron_job():
     return CronJob.query.order_by(CronJob.date.desc()).first()
 
+
 def query_last_slope():
     return Slope.query.order_by(Slope.end_date.desc()).first()
 
+
 def count_records(target, against, time_elapse=1, time_unit='min'):
-    return Price.query.filter_by(target=target, against=against, time_elapse=time_elapse, time_unit=time_unit).count()
+    return Price.query.filter_by(
+        target=target,
+        against=against,
+        time_elapse=time_elapse, time_unit=time_unit).count()
+
 
 def count_cron_job():
     return CronJob.query.count()
+
 
 def count_slope():
     return Slope.query.count()
