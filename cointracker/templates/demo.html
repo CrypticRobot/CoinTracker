@@ -64,7 +64,7 @@ Price
                                 <h6 id="{{each.chartid}}_amplitude"></h6>
                             </div>
                             <div class="col-5 col-sm-5 col-md-3 text-center"> <!--col-4 col-sm-4 col-md-2 text-center-->
-                                <h6>{{each.limit}} {{each.time_unit|upper}} <span id="{{each.chartid}}_icon_gain" class="oi" title="arrow" aria-hidden="true"></span></h6>
+                                <h6>{{each.limit*each.time_elapse}} {{each.time_unit|upper}} <span id="{{each.chartid}}_icon_gain" class="oi" title="arrow" aria-hidden="true"></span></h6>
                                 <h6 id="{{each.chartid}}_gain_percent"></h6>
                             </div>
                             <div class="col-1 col-sm-1 col-md-1">
@@ -97,26 +97,6 @@ Price
 <script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
 <script src="/static/js/chartist-plugin-tooltip.min.js"></script>
 <script>
-var my_options = {
-    showArea: true,
-    showPoint: true,
-    fullWidth: true,
-    axisX: {
-        labelInterpolationFnc: function(value, index, labels) {
-            // Show at most 4 labels on the axisX (small screen problem)
-            var divider = labels.length / 4;
-            return index % divider === 0 ? value : null;
-        },
-    },
-    axisY: {
-        offset: 50,
-        position: 'end'
-    },
-    plugins: [
-        Chartist.plugins.tooltip()
-    ]
-};
-
 var responsiveOptions = [
   ['screen and (min-width: 641px) and (max-width: 1024px)', {
     showPoint: false,
@@ -208,11 +188,12 @@ function percent(a, b){
     return parseFloat(((a/b)*100).toFixed(2));
 }
 
-function fetchData(target, against, limit=10, time_unit='day', chartid, showDate=true, showTime=true){
+function fetchData(target, against, limit=10, time_elapse=1, time_unit='day', chartid, showDate=true, showTime=true){
     var sending_data = {
         target: target,
         against: against,
         limit: limit,
+        time_elapse: time_elapse,
         time_unit: time_unit,
     };
 
@@ -234,12 +215,31 @@ function fetchData(target, against, limit=10, time_unit='day', chartid, showDate
                 // my_data.series.push(generate_serie(data['result'],'start'));
                 // my_data.series.push(generate_serie(data['result'],'low'));
                 // my_data.series.push(generate_serie(data['result'],'end'));
-                new Chartist.Line('#'+chartid, my_data, my_options, responsiveOptions);
-
                 first_price = generate_first(data['result'], 'high');
                 last_price = generate_last(data['result'], 'high');
                 amplitude = generate_amplitude(data['result'], 'high');
                 gain = generate_gain(data['result'], 'high');
+
+                var my_options = {
+                    showArea: true,
+                    showPoint: true,
+                    fullWidth: true,
+                    axisX: {
+                        labelInterpolationFnc: function(value, index, labels) {
+                            // Show at most 4 labels on the axisX (small screen problem)
+                            var divider = labels.length / 4;
+                            return index % divider === 0 ? value : null;
+                        },
+                    },
+                    axisY: {
+                        offset: 50,
+                        position: 'end'
+                    },
+                    plugins: [
+                        Chartist.plugins.tooltip()
+                    ]
+                };
+                new Chartist.Line('#'+chartid, my_data, my_options, responsiveOptions);
 
                 $('#'+chartid+'_footage').text(generate_last_datetime(data['result']));
                 $('#'+chartid+'_amplitude').text(percent(amplitude, first_price)+'%');
@@ -270,7 +270,7 @@ function fetchData(target, against, limit=10, time_unit='day', chartid, showDate
     });
 }
 {% for each in charts %}
-$(document).ready(fetchData("{{each.target}}", "{{each.against}}", "{{each.limit}}", "{{each.time_unit}}", '{{each.chartid}}', {{each.showDate|lower}}, {{each.showTime|lower}})); // 页面载入完毕，立即触发初始化
+$(document).ready(fetchData("{{each.target}}", "{{each.against}}", "{{each.limit}}", "{{each.time_elapse}}", "{{each.time_unit}}", '{{each.chartid}}', {{each.showDate|lower}}, {{each.showTime|lower}})); // 页面载入完毕，立即触发初始化
 {% endfor %}
 </script>
 <script>
@@ -349,14 +349,8 @@ $('.collapse').on('shown.bs.collapse', function () {
     var current_id = $(this).attr('id');
     $('.collapse').not('#'+current_id).collapse('hide');
 
-
     $(this).parent('.card').find('.animatearrow').removeClass('oi-chevron-right').addClass('oi-chevron-bottom').removeClass('text-primary').addClass('text-secondary');
 
-
-    // var card_parent = $(this).parent('.card');
-    // $('html, body').animate({
-    //     scrollTop: card_parent.offset().top
-    // }, 0);
 })
 
 $('.collapse').on('hide.bs.collapse', function () {
