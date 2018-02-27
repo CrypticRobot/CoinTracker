@@ -4,4 +4,5 @@ function ctrl_c() {
         docker-compose down
         exit
 }
+docker pull laalaguer/flask-dev:latest
 docker-compose down && docker-compose up
