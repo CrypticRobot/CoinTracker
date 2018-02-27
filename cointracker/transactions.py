@@ -91,7 +91,7 @@ def store_history_prices(okcoinSpot, target, against, since=None, time_elapse=1,
             time_unit=time_unit
         ).first()
 
-        if not already:
+        if not already:  # new data point
             price = Price(
                 date=datetime.datetime.fromtimestamp(line[0]/1000),
                 target=target,
@@ -106,6 +106,12 @@ def store_history_prices(okcoinSpot, target, against, since=None, time_elapse=1,
             )
             db.session.add(price)
             inserted += 1
+        else:  # old data point, maybe new data values?
+            already.start = float(line[1])
+            already.high = float(line[2])
+            already.low = float(line[3])
+            already.end = float(line[4])
+            already.volume = float(line[5])
 
         db.session.commit()
     return len(lines), inserted
