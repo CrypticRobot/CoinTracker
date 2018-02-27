@@ -107,11 +107,12 @@ def store_history_prices(okcoinSpot, target, against, since=None, time_elapse=1,
             db.session.add(price)
             inserted += 1
         else:  # old data point, maybe new data values?
-            already.start = float(line[1])
-            already.high = float(line[2])
-            already.low = float(line[3])
-            already.end = float(line[4])
-            already.volume = float(line[5])
+            if already.volume != float(line[5]):
+                already.start = float(line[1])
+                already.high = float(line[2])
+                already.low = float(line[3])
+                already.end = float(line[4])
+                already.volume = float(line[5])
 
         db.session.commit()
     return len(lines), inserted
@@ -121,17 +122,28 @@ def cron_store_history_prices(okcoinSpot, target, against, since=None, time_elap
     ''' A cron job to fetch historical price data '''
     try:
         # Detect last old prices
-        # already = Price.query.filter_by(
-        #     target=target,
-        #     against=against,
-        #     time_elapse=time_elapse,
-        #     time_unit=time_unit
-        # ).order_by(Price.date.desc()).first()
+        already = Price.query.filter_by(
+            target=target,
+            against=against,
+            time_elapse=time_elapse,
+            time_unit=time_unit
+        ).order_by(Price.date.desc()).first()
 
-        # if already:
-        #     since = already.date if not since else since
+        if already:
+            if time_unit == 'min':
+                since = already.date - datetime.timedelta(minutes=10) if not since else since
+            elif time_unit == 'day':
+                since = already.date - datetime.timedelta(days=10) if not since else since
+            else:
+                since = already.date - datetime.timedelta(days=10) if not since else since
+
+            # logger.log(logging.DEBUG, 'already: {}, since: {}'.format(already.date, since))
+
         fetched, stored = store_history_prices(
             okcoinSpot, target, against, since, time_elapse, time_unit)
+
+        # logger.log(logging.DEBUG, 'fetched: {}, stored: {}'.format(fetched, stored))
+
         cron_job = CronJob(
             date=datetime.datetime.utcnow(),
             fetched=fetched,
