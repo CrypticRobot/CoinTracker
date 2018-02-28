@@ -45,9 +45,9 @@ class APIPrice(Form):
         [validators.Optional(), validators.NumberRange(min=0, max=300)],
     )
 
-    newest = BooleanField(
+    newest = StringField(
         u'newest',
-        [validators.Optional()]
+        [validators.Optional(), validators.AnyOf(['true', 'false'])]
     )
 
 

@@ -42,7 +42,7 @@ def api_price():
     time_elapse = form.time_elapse.data if form.time_elapse.data else 1
     time_unit = form.time_unit.data if form.time_unit.data else 'min'
     limit = form.limit.data if form.limit.data else 120
-    newest = form.newest.data if form.newest.data else True
+    newest = True if form.newest.data.lower() == 'true' else False
 
     records = query_records(
         form.target.data,

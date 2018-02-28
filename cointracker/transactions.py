@@ -76,7 +76,7 @@ def store_history_prices(okcoinSpot, target, against, since=None, time_elapse=5,
             time_elapse, time_unit))
 
     if since:
-        since = int(since.strftime("%s")) * 1000
+        since = int(since.strftime("%s")) * 1000  # okex format is 1000 * timestamp
         lines = okcoinSpot.kline(
             symbol=symbol, time_type=time_type, since=since)
     else:
@@ -189,8 +189,6 @@ def query_records(target, against, time_elapse=5, time_unit='min', before=None, 
         q = q.filter(Price.date > after)
     if newest:
         q = q.order_by(Price.date.desc())
-    else:
-        q = q.order_by(Price.date)
     if limit:
         if limit > 300:
             limit = 300
