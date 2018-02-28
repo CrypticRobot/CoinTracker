@@ -214,7 +214,7 @@ def query_records(target, against, time_elapse=5, time_unit='min', before=None, 
 
 
 def query_a_record(target, against, time_elapse=5, time_unit='min', order='ASC'):
-    ''' Before and After shall be datetime.datetime obj
+    ''' Query a record
     Returns
     -------
     a result, in the form of python object
