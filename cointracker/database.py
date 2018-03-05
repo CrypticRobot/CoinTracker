@@ -15,7 +15,7 @@ class Printable():
         insp = inspect(self.__class__)
         columns = insp.all_orm_descriptors.keys()
 
-        columns.remove('__mapper__')
+        columns = [x for x in columns if not x.startswith('__')]
         for x in exclude:
             columns.remove(x)
 
