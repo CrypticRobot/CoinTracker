@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1>cointracker api/price test</h1>
+    {{price}}
     <p>{{ error }}</p>
   </div>
 </template>
@@ -9,7 +10,7 @@
 import axios from 'axios'
 
 export default {
-  name: 'test',
+  name: 'HelloWorld',
   data () {
     return {
       price: [],
@@ -18,15 +19,12 @@ export default {
   },
 
   created () {
-    console.log('created') // eslint-disable-line
-    axios.get('http://localhost/api/price')
+    axios.get('/api/price')
       .then((response) => {
         this.price = response.data
-        console.log(this.price) // eslint-disable-line
       })
       .catch((e) => {
         this.error = e.message
-        console.log(this.error) // eslint-disable-line
       })
   }
 }
