@@ -236,7 +236,7 @@ for each in hour_jobs:
     )
     scheduler.add_job(
         func=cron_store_history_prices,
-        trigger=CronTrigger(second=59),
+        trigger=CronTrigger(minute=1),  # every hour, minute == 1 time point
         args=[okcoinSpot, each['target'], each['against']],
         kwargs={'since': None,
                 'time_elapse': each['time_elapse'],
@@ -255,7 +255,7 @@ for each in day_jobs:
     )
     scheduler.add_job(
         func=cron_store_history_prices,
-        trigger=CronTrigger(second=45),  # every minute 45 seconds point
+        trigger=CronTrigger(hour=1),  # every day, hour == 1
         args=[okcoinSpot, each['target'], each['against']],
         kwargs={'since': None,
                 'time_elapse': each['time_elapse'],
