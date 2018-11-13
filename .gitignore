@@ -102,7 +102,9 @@ ENV/
 
 # mysql database for docker
 docker/volumes/varlibmysql/*
+docker/volumes/redisdata/*
 
 .DS_Store
 
 .vscode/
+

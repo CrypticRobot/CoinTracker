@@ -11,4 +11,14 @@ character-set-server = utf8mb4
 collation-server = utf8mb4_unicode_ci
 init_connect='SET NAMES utf8mb4'
 skip-character-set-client-handshake = true
-max_connections = 1000
+
+max_connections = 100
+key_buffer_size = 16M
+sort_buffer_size = 4M
+read_buffer_size = 4M
+read_rnd_buffer_size = 16M
+innodb_buffer_pool_size = 64M
+tmp_table_size = 16M
+max_allowed_packet = 16M
+thread_stack = 192K
+thread_cache_size = 8

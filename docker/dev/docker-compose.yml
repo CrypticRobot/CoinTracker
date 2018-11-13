@@ -15,7 +15,7 @@ services:
       - "3306:3306"
 
   front:
-    image: laalaguer/flask-dev
+    image: laalaguer/flask-tictalk-wx
     depends_on:
        - db
     volumes:
@@ -30,4 +30,5 @@ services:
       MYSQL_USER: cointracker
       MYSQL_PASSWORD: changemeifyoucan
       MYSQL_DB_NAME: cointracker
-
+      REDIS_HOST: r
+      REDIS_PORT: 6379
