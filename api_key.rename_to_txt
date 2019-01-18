@@ -1,0 +1,8 @@
+MYSQL_USER=''
+MYSQL_PASSWORD=''
+MYSQL_HOST='127.0.0.1'
+MYSQL_PORT='3306'
+MYSQL_DB_NAME='cryptic'
+OK_API_SITE='www.okex.com'
+OK_API_PK='ca2ffc8c-b515-474b-b409-37923bfc12a3'  # Public key (access key)
+OK_API_SK='8A64C29D3A1583379A6DF237445DC508'  # Secret Key (access secret)
